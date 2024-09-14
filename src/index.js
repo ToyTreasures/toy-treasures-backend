@@ -9,19 +9,19 @@ const DB_URI = process.env.DB_URI;
 const PORT = process.env.PORT;
 
 const userRoutes = require("./routes/user.routes");
-// const todoRoutes = require("./routes/todo.routes");
+const itemRoutes = require("./routes/item.routes");
 
 const UserController = require("./controllers/user.controllers");
-// const TodoController = require("./controllers/todo.controllers");
+const ItemController = require("./controllers/item.controllers");
 
 const UserRepository = require("./repositories/user.repository");
-// const TodoRepository = require("./repositories/todo.repository");
+const ItemRepository = require("./repositories/item.repository");
 
 const userRepository = new UserRepository();
-// const TodoRepository = new TodoRepository();
+const itemRepository = new ItemRepository();
 
 const userController = new UserController(userRepository);
-// const todoController = new TodoController(todoRepository);
+const itemController = new ItemController(itemRepository);
 
 const app = express();
 
@@ -31,11 +31,12 @@ app.use(cors());
 app.use(express.json());
 
 mainRouter.use("/users", userRoutes(userController));
-// mainRouter.use("/todos", todoRoutes(todoController));
+mainRouter.use("/items", itemRoutes(itemController));
 
 app.use("/api/v1", mainRouter);
 
 app.use(errorHandler); //global error middleware
+
 mongoose
   .connect(DB_URI)
   .then(() => {
