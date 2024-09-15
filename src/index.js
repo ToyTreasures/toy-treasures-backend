@@ -1,8 +1,10 @@
 const express = require("express");
 const { default: mongoose } = require("mongoose");
 const errorHandler = require("./middlewares/errorHandler");
-require("express-async-errors");
+const requestLogger = require("./middlewares/requestLogger");
+const morgan = require("morgan");
 const cors = require("cors");
+require("express-async-errors");
 
 require("dotenv").config();
 const DB_URI = process.env.DB_URI;
@@ -32,6 +34,8 @@ const mainRouter = express.Router();
 
 app.use(cors());
 app.use(express.json());
+app.use(morgan("dev"));
+app.use(requestLogger);
 
 mainRouter.use("/users", userRoutes(userController));
 mainRouter.use("/items", itemRoutes(itemController));
