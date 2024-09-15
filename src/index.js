@@ -5,7 +5,7 @@ require("express-async-errors");
 const cors = require("cors");
 
 require("dotenv").config();
-const DB_URL = process.env.DB_URL;
+const DB_URI = process.env.DB_URI;
 const PORT = process.env.PORT;
 
 const userRoutes = require("./routes/user.routes");
@@ -42,7 +42,7 @@ app.use("/api/v1", mainRouter);
 app.use(errorHandler); //global error middleware
 
 mongoose
-  .connect(DB_URL)
+  .connect(DB_URI)
   .then(() => {
     app.listen(PORT, () => {
       console.log(`server is listening on port ${PORT}`);
