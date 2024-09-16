@@ -5,7 +5,6 @@ const requestLogger = require("./middlewares/requestLogger");
 const morgan = require("morgan");
 const cors = require("cors");
 require("express-async-errors");
-const morgan = require("morgan");
 
 require("dotenv").config();
 const DB_URI = process.env.DB_URI;
