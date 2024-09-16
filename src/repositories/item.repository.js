@@ -11,7 +11,7 @@ class ItemRepository {
 
   async createItem(item, userId) {
     const newItem = new Item({ ...item, ownerId: userId });
-    await newItem.save();
+    return await newItem.save();
   }
 
   async updateItem(id, newItemData) {
@@ -22,7 +22,7 @@ class ItemRepository {
   }
 
   async deleteItem(id) {
-    return await findByIdAndDelete(id);
+    return await Item.findByIdAndDelete(id);
   }
 }
 
