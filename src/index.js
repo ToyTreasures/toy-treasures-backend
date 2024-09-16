@@ -30,16 +30,20 @@ const authController = new AuthController(userRepository);
 
 const app = express();
 
+const mainRouter = express.Router();
+
 app.use(cors());
 app.use(express.json());
 app.use(requestLogger);
 app.use(morgan("short"));
 
-app.use("/users", userRoutes(userController));
-app.use("/items", itemRoutes(itemController));
-app.use("/auth", authRoutes(authController));
+mainRouter.use("/users", userRoutes(userController));
+mainRouter.use("/items", itemRoutes(itemController));
+mainRouter.use("/auth", authRoutes(authController));
 
-app.use(errorHandler); //global error middleware
+app.use("/api/v1", mainRouter);
+
+app.use(errorHandler);
 
 mongoose
   .connect(DB_URI)
