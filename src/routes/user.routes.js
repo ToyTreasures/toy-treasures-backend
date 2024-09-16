@@ -14,7 +14,7 @@ const userRouter = (userController) => {
     res.status(200).send({ success: "User fetched successfully", user });
   });
 
-  router.patch("/:id", async (req, res) => {
+  router.patch("/:id", auth, async (req, res) => {
     const { id } = req.params;
     const user = await userController.updateUser(id, req.body);
     res.status(200).send({ success: "User updated successfully", user });
