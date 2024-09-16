@@ -14,7 +14,10 @@ const itemRouter = (itemController) => {
   });
 
   router.post("/", async (req, res) => {
-    const item = await itemController.createItem(req.body, "66e57d5d19e130df45b391e2");
+    const item = await itemController.createItem(
+      req.body,
+      "66e57d5d19e130df45b391e2"
+    );
     res.status(200).send({ success: "Item created successfully", item });
   });
 
