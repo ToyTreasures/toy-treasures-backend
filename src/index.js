@@ -5,6 +5,7 @@ const requestLogger = require("./middlewares/requestLogger");
 const morgan = require("morgan");
 const cors = require("cors");
 require("express-async-errors");
+const morgan = require("morgan");
 
 require("dotenv").config();
 const DB_URI = process.env.DB_URI;
@@ -30,18 +31,14 @@ const authController = new AuthController(userRepository);
 
 const app = express();
 
-const mainRouter = express.Router();
-
 app.use(cors());
 app.use(express.json());
-app.use(morgan("dev"));
 app.use(requestLogger);
+app.use(morgan("short"));
 
-mainRouter.use("/users", userRoutes(userController));
-mainRouter.use("/items", itemRoutes(itemController));
-mainRouter.use("/auth", authRoutes(authController));
-
-app.use("/api/v1", mainRouter);
+app.use("/users", userRoutes(userController));
+app.use("/items", itemRoutes(itemController));
+app.use("/auth", authRoutes(authController));
 
 app.use(errorHandler); //global error middleware
 

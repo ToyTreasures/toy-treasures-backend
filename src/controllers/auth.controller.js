@@ -16,7 +16,7 @@ class AuthController {
     const existingUser = await this.userRepository.getUserByEmail(
       userData.email
     );
-    if (existingUser) throw new CustomError("User already exists", 409);
+    if (existingUser) throw new CustomError("Email already exists", 409);
     const user = await this.userRepository.createUser(userData);
     return user;
   }
