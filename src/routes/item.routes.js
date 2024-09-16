@@ -3,8 +3,18 @@ const router = express.Router();
 
 const itemRouter = (itemController) => {
   router.get("/", async (req, res) => {
-    const items = await itemController.getAllItems();
-    res.status(200).send({ success: "All items fetched successfully", items });
+    const { page, limit } = req.query;
+    const { itemsNumber, pages, items } = await itemController.getAllItems(
+      page,
+      limit
+    );
+    res
+      .status(200)
+      .send({
+        success: "All items fetched successfully",
+        items,
+        paginationMetaData: { itemsNumber, pages },
+      });
   });
 
   router.get("/:id", async (req, res) => {
@@ -14,7 +24,10 @@ const itemRouter = (itemController) => {
   });
 
   router.post("/", async (req, res) => {
-    const item = await itemController.createItem(req.body, "66e57d5d19e130df45b391e2");
+    const item = await itemController.createItem(
+      req.body,
+      "66e57d5d19e130df45b391e2"
+    );
     res.status(200).send({ success: "Item created successfully", item });
   });
 
