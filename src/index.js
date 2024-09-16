@@ -1,9 +1,11 @@
 const express = require("express");
 const { default: mongoose } = require("mongoose");
 const errorHandler = require("./middlewares/errorHandler");
-require("express-async-errors");
+const requestLogger = require("./middlewares/requestLogger");
+const morgan = require("morgan");
 const cors = require("cors");
-const morgan = require("morgan")
+require("express-async-errors");
+const morgan = require("morgan");
 
 require("dotenv").config();
 const DB_URI = process.env.DB_URI;
@@ -31,6 +33,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(requestLogger);
 app.use(morgan("short"));
 
 app.use("/users", userRoutes(userController));
