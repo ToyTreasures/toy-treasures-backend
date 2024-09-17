@@ -2,7 +2,8 @@ const CustomError = require("../utils/CustomError");
 const util = require("util");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const jwtSignAsync = util.promisify(jwt.sign);
+const jwtVerifyAsync = util.promisify(jwt.verify);
+const { generateAccessAndRefreshTokens } = require("../utils/jwtHelpers");
 
 class AuthController {
   userRepository;
@@ -26,16 +27,44 @@ class AuthController {
     if (!user) throw new CustomError("invalid email or password", 400);
     if (!userData.password) throw new CustomError("Password is required", 400);
     const isMatched = await bcrypt.compare(userData.password, user.password);
+
     if (isMatched) {
-      const token = await jwtSignAsync(
-        { userId: user.id },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "1d" }
-      );
-      return { token, user };
+      const { accessToken, refreshToken } =
+        await generateAccessAndRefreshTokens(
+          user._id.toString(),
+          this.userRepository.getUserById,
+          this.userRepository.saveUserWithoutValidation
+        );
+      return { accessToken, refreshToken, user };
     } else {
       throw new CustomError("invalid email or password", 400);
     }
+  }
+
+  async logout(userData) {
+    const user = await this.userRepository.updateUser(userData._id, {
+      $set: { refreshToken: null },
+    });
+    return user;
+  }
+
+  async refreshAccessToken(incommingRefreshToken) {
+    if (!incommingRefreshToken)
+      throw new CustomError("Refresh token is required", 401);
+    const decodedToken = await jwtVerifyAsync(
+      incommingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+    const user = await this.userRepository.getUserById(decodedToken?._id);
+    if (!user) throw new CustomError("Refresh token is required", 401);
+    if (incommingRefreshToken !== user.refreshToken)
+      throw new CustomError("Invalid refresh token", 401);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+      user._id.toString(),
+      this.userRepository.getUserById,
+      this.userRepository.saveUserWithoutValidation
+    );
+    return { accessToken, refreshToken, user };
   }
 }
 

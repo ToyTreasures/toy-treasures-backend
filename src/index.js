@@ -2,6 +2,7 @@ const express = require("express");
 const { default: mongoose } = require("mongoose");
 const errorHandler = require("./middlewares/errorHandler");
 const requestLogger = require("./middlewares/requestLogger");
+const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const cors = require("cors");
 require("express-async-errors");
@@ -34,6 +35,7 @@ const mainRouter = express.Router();
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 app.use(requestLogger);
 app.use(morgan("short"));
 

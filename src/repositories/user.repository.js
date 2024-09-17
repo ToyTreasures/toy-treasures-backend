@@ -24,6 +24,10 @@ class UserRepository {
       runValidators: true,
     });
   }
+
+  async saveUserWithoutValidation(user) {
+    await user.save({ validateBeforeSave: false });
+  }
 }
 
 module.exports = UserRepository;

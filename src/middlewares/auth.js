@@ -5,16 +5,14 @@ const CustomError = require("../utils/CustomError");
 const jwtVerifyAsync = util.promisify(jwt.verify);
 
 module.exports = async (req, res, next) => {
-  const { authorization: token } = req.headers;
-
-  if (!token) throw new CustomError("unAuthenticated", 400);
-
-  const payload = await jwtVerifyAsync(token, process.env.ACCESS_TOKEN_SECRET);
-
-  const user = await User.findById(payload.userId);
-
+  const { authorization: accessToken } = req.headers;
+  if (!accessToken) throw new CustomError("unAuthenticated", 400);
+  const payload = await jwtVerifyAsync(
+    accessToken,
+    process.env.ACCESS_TOKEN_SECRET
+  );
+  const user = await User.findById(payload._id);
   if (!user) throw new CustomError("unAuthenticated", 400);
-
   req.user = user;
   next();
 };
