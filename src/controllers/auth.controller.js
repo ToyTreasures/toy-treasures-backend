@@ -29,7 +29,7 @@ class AuthController {
     if (isMatched) {
       const token = await jwtSignAsync(
         { userId: user.id },
-        process.env.JWT_SECRET,
+        process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: "1d" }
       );
       return { token, user };
