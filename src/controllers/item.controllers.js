@@ -6,8 +6,9 @@ class ItemController {
     this.itemRepository = itemRepository;
   }
 
-  async getAllItems() {
-    return await this.itemRepository.getAllItems();
+  async getAllItems(page="1", limit="12") {
+    const skip = (page-1) * limit;
+    return await this.itemRepository.getAllItems(limit, skip);
   }
 
   async getItemById(id) {
