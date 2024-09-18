@@ -5,10 +5,12 @@ const router = express.Router();
 
 const itemRouter = (itemController) => {
   router.get("/", async (req, res) => {
-    const { page, limit } = req.query;
+    const { page, limit, filters, search } = req.query;
     const { itemsNumber, pages, items } = await itemController.getAllItems(
       page,
-      limit
+      limit,
+      filters,
+      search
     );
     res.status(200).send({
       success: "All items fetched successfully",
