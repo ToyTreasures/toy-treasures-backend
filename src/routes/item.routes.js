@@ -26,9 +26,10 @@ const itemRouter = (itemController) => {
   });
 
   router.post("/", auth, async (req, res) => {
-    const userId = req.user._id;
-    const item = await itemController.createItem(req.body, userId);
-    res.status(200).send({ success: "Item created successfully", item });
+    const ownerId = req.user._id;
+    const item = {...req.body, ownerId};
+    const createdItem = await itemController.createItem(item);
+    res.status(200).send({ success: "Item created successfully", item: createdItem });
   });
 
   router.patch("/:id", auth, async (req, res) => {

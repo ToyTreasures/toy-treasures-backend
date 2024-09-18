@@ -4,7 +4,8 @@ const router = express.Router();
 
 const authRouter = (authController) => {
   router.post("/register", async (req, res) => {
-    const user = await authController.register(req.body);
+    const {role, ...userData} = req.body;
+    const user = await authController.register(userData);
     res.status(200).send({ success: "User registered successfully", user });
   });
 

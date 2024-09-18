@@ -23,13 +23,15 @@ class AuthController {
   }
 
   async login(userData) {
+    console.log(userData);
     const user = await this.userRepository.getUserByEmail(userData.email);
+    console.log(user);
     if (!user) throw new CustomError("invalid email or password", 400);
     if (!userData.password) throw new CustomError("Password is required", 400);
     const isMatched = await bcrypt.compare(userData.password, user.password);
     if (isMatched) {
-      const { accessToken, refreshToken } =
-        await this.generateAccessAndRefreshTokens(user);
+      const accessToken = await this.generateAccessToken(user);
+      const refreshToken = await this.generateRefreshToken(user._id.toString());
       return { accessToken, refreshToken, user };
     } else {
       throw new CustomError("invalid email or password", 400);
@@ -53,18 +55,9 @@ class AuthController {
     const user = await this.userRepository.getUserById(decodedToken?._id);
     if (!user || incommingRefreshToken !== user.refreshToken)
       throw new CustomError("Unauthorized, Invalid refresh token", 401);
-    const { accessToken, refreshToken } =
-      await this.generateAccessAndRefreshTokens(user);
-    return { accessToken, refreshToken, user };
-  }
-
-  async generateAccessAndRefreshTokens(user) {
     const accessToken = await this.generateAccessToken(user);
     const refreshToken = await this.generateRefreshToken(user._id.toString());
-    await this.userRepository.updateUser(user._id, {
-      refreshToken,
-    });
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, user };
   }
 
   async generateAccessToken(user) {
@@ -89,6 +82,9 @@ class AuthController {
       process.env.REFRESH_TOKEN_SECRET,
       { expiresIn: "30d" }
     );
+    await this.userRepository.updateUser(userId, {
+      refreshToken,
+    });
     return refreshToken;
   }
 }

@@ -17,6 +17,7 @@ const itemSchema = Schema(
     },
     condition: {
       type: String,
+      enum: ["new", "gentle", "used"],
       required: [true, "Condition is required"],
     },
     isAvailableForSwap: {
