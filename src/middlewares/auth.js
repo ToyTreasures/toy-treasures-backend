@@ -1,22 +1,15 @@
-const User = require("../models/user.model");
-
-const jwt = require("jsonwebtoken");
-const util = require("util");
 const CustomError = require("../utils/CustomError");
-
-const jwtVerify = util.promisify(jwt.verify);
+const util = require("util");
+const jwt = require("jsonwebtoken");
+const jwtVerifyAsync = util.promisify(jwt.verify);
 
 module.exports = async (req, res, next) => {
-  const { authorization: token } = req.headers;
-
-  if (!token) throw new CustomError("unAuthenticated", 400);
-
-  const payload = await jwtVerify(token, process.env.JWT_SECRET);
-
-  const user = await User.findById(payload.userId);
-
-  if (!user) throw new CustomError("unAuthenticated", 400);
-
-  req.user = user;
+  const { authorization: accessToken } = req.headers;
+  if (!accessToken) throw new CustomError("Unauthorized", 401);
+  const payload = await jwtVerifyAsync(
+    accessToken,
+    process.env.ACCESS_TOKEN_SECRET
+  );
+  req.user = payload;
   next();
 };

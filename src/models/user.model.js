@@ -1,5 +1,7 @@
 const { Schema, model } = require("mongoose");
+const util = require("util");
 const bcrypt = require("bcrypt");
+
 const userSchema = Schema(
   {
     name: {
@@ -30,12 +32,15 @@ const userSchema = Schema(
     },
     address: {
       type: String,
-      required: true,
+      required: [true, "Address is required"],
     },
     role: {
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+    refreshToken: {
+      type: String,
     },
   },
   {
@@ -43,11 +48,13 @@ const userSchema = Schema(
     toJSON: {
       transform(doc, ret) {
         delete ret.password;
+        delete ret.refreshToken;
         delete ret.__v;
       },
     },
   }
 );
+
 userSchema.pre("save", async function (next) {
   if (this.isModified("password") || this.isNew) {
     this.password = await bcrypt.hash(this.password, 10);

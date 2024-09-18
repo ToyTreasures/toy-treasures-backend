@@ -11,19 +11,40 @@ class ItemController {
     this.itemRepository = itemRepository;
   }
 
-  async getAllItems(page = "1", limit = "12") {
-    try {
-      const { error, value } = paginatedItemsSchema.validate({ page, limit });
-      if (error) {
-        const errorMessages = error.details.map((detail) => detail.message);
-        throw new CustomError(errorMessages.join(", "), 400);
-      }
-      const skip = (page - 1) * limit;
-      return await this.itemRepository.getAllItems(value.limit, skip);
-    } catch (error) {
-      if (error instanceof CustomError) throw error;
-      throw new CustomError(error.message, 500);
+  async getAllItems(page = "1", limit = "12", filters, search) {
+    const skip = (page - 1) * limit;
+    const query = [];
+    let address = "";
+    if (filters) {
+      const filtersArray = filters.split("--");
+      filtersArray.forEach((filter) => {
+        if (filter === "swap") {
+          query.push({ isAvailableForSwap: true });
+        } else if (filter.includes("minPrice")) {
+          const price = filter.split("-")[1];
+          query.push({ price: { $gte: price } });
+        } else if (filter.includes("maxPrice")) {
+          const price = filter.split("-")[1];
+          query.push({ price: { $lte: price } });
+        } else if (filter.includes("condition")) {
+          const conditions = filter.split("-")[1].split("%");
+          query.push({ condition: { $in: conditions } });
+        } else if (filter.includes("address")) {
+          address = filter.split("-")[1];
+        }
+      });
     }
+
+    if (search) {
+      query.push({
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { description: { $regex: search, $options: "i" } },
+        ],
+      });
+    }
+
+    return await this.itemRepository.getAllItems(limit, skip, query, address);
   }
 
   async getItemById(id) {
@@ -34,48 +55,26 @@ class ItemController {
     return item;
   }
 
-  async createItem(item, userId) {
-    try {
-      const { error, value } = createItemSchema.validate({ ...item, ownerId: userId });
-
-      if (error) {
-        const errorMessages = error.details.map((detail) => detail.message);
-        throw new CustomError(errorMessages.join(", "), 400);
-      }
-
-      return await this.itemRepository.createItem(value, userId);
-    } catch (error) {
-      if (error instanceof CustomError) throw error;
-      throw new CustomError(error.message, 500);
-    }
+  async createItem(item) {
+    return await this.itemRepository.createItem(item);
   }
 
-  async updateItem(id, newItemData) {
-    try {
-      const { error, value } = updateItemSchema.validate(newItemData);
-
-      if (error) {
-        const errorMessages = error.details.map((detail) => detail.message);
-        throw new CustomError(errorMessages.join(", "), 400);
-      }
-
-      const item = await this.itemRepository.updateItem(id, value);
-      if (!item) {
-        throw new CustomError("Item not Found", 404);
-      }
-      return item;
-    } catch (error) {
-      if (error instanceof CustomError) throw error;
-      throw new CustomError(error.message, 500);
-    }
+  async updateItem(itemId, userId, newItemData) {
+    const oldItem = await this.itemRepository.getItemById(itemId);
+    if (!oldItem) throw new CustomError("Item not Found", 404);
+    if (userId.toString() !== oldItem.ownerId.toString())
+      throw new CustomError("Unauthorized to update this item", 401);
+    const newItem = await this.itemRepository.updateItem(itemId, newItemData);
+    return newItem;
   }
 
-  async deleteItem(id) {
-    const item = await this.itemRepository.deleteItem(id);
-    if (!item) {
-      throw new CustomError("Invalid item id");
-    }
-    return item;
+  async deleteItem(itemId, userId) {
+    const item = await this.itemRepository.getItemById(itemId);
+    if (!item) throw new CustomError("Item not Found", 404);
+    if (userId.toString() !== item.ownerId.toString())
+      throw new CustomError("Unauthorized to delete this item", 401);
+    const deletedItem = await this.itemRepository.deleteItem(itemId);
+    return deletedItem;
   }
 }
 

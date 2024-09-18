@@ -17,6 +17,7 @@ const itemSchema = Schema(
     },
     condition: {
       type: String,
+      enum: ["new", "gentle", "used"],
       required: [true, "Condition is required"],
     },
     isAvailableForSwap: {
@@ -26,6 +27,7 @@ const itemSchema = Schema(
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true
     },
   },
   {
