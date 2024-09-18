@@ -6,9 +6,40 @@ class ItemController {
     this.itemRepository = itemRepository;
   }
 
-  async getAllItems(page = "1", limit = "12") {
+  async getAllItems(page = "1", limit = "12", filters, search) {
     const skip = (page - 1) * limit;
-    return await this.itemRepository.getAllItems(limit, skip);
+    const query = [];
+    let address = "";
+    if (filters) {
+      const filtersArray = filters.split("--");
+      filtersArray.forEach((filter) => {
+        if (filter === "swap") {
+          query.push({ isAvailableForSwap: true });
+        } else if (filter.includes("minPrice")) {
+          const price = filter.split("-")[1];
+          query.push({ price: { $gte: price } });
+        } else if (filter.includes("maxPrice")) {
+          const price = filter.split("-")[1];
+          query.push({ price: { $lte: price } });
+        } else if (filter.includes("condition")) {
+          const conditions = filter.split("-")[1].split("%");
+          query.push({ condition: { $in: conditions } });
+        } else if (filter.includes("address")) {
+          address = filter.split("-")[1];
+        }
+      });
+    }
+
+    if (search) {
+      query.push({
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { description: { $regex: search, $options: "i" } },
+        ],
+      });
+    }
+
+    return await this.itemRepository.getAllItems(limit, skip, query, address);
   }
 
   async getItemById(id) {
