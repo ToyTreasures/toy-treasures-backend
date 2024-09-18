@@ -54,13 +54,13 @@ class AuthController {
     if (!user || incommingRefreshToken !== user.refreshToken)
       throw new CustomError("Unauthorized, Invalid refresh token", 401);
     const { accessToken, refreshToken } =
-      await this.generateAccessAndRefreshTokens(user._id.toString());
+      await this.generateAccessAndRefreshTokens(user);
     return { accessToken, refreshToken, user };
   }
 
   async generateAccessAndRefreshTokens(user) {
     const accessToken = await this.generateAccessToken(user);
-    const refreshToken = await this.generateRefreshToken(user._id);
+    const refreshToken = await this.generateRefreshToken(user._id.toString());
     await this.userRepository.updateUser(user._id, {
       refreshToken,
     });
