@@ -3,7 +3,7 @@ const util = require("util");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const jwtVerifyAsync = util.promisify(jwt.verify);
-const { generateAccessAndRefreshTokens } = require("../utils/jwtHelpers");
+const jwtSignAsync = util.promisify(jwt.sign);
 
 class AuthController {
   userRepository;
@@ -27,14 +27,9 @@ class AuthController {
     if (!user) throw new CustomError("invalid email or password", 400);
     if (!userData.password) throw new CustomError("Password is required", 400);
     const isMatched = await bcrypt.compare(userData.password, user.password);
-
     if (isMatched) {
       const { accessToken, refreshToken } =
-        await generateAccessAndRefreshTokens(
-          user._id.toString(),
-          this.userRepository.getUserById,
-          this.userRepository.saveUserWithoutValidation
-        );
+        await this.generateAccessAndRefreshTokens(user);
       return { accessToken, refreshToken, user };
     } else {
       throw new CustomError("invalid email or password", 400);
@@ -50,21 +45,51 @@ class AuthController {
 
   async refreshAccessToken(incommingRefreshToken) {
     if (!incommingRefreshToken)
-      throw new CustomError("Refresh token is required", 401);
+      throw new CustomError("Unauthorized, Refresh token is required", 401);
     const decodedToken = await jwtVerifyAsync(
       incommingRefreshToken,
       process.env.REFRESH_TOKEN_SECRET
     );
     const user = await this.userRepository.getUserById(decodedToken?._id);
-    if (!user) throw new CustomError("Refresh token is required", 401);
-    if (incommingRefreshToken !== user.refreshToken)
-      throw new CustomError("Invalid refresh token", 401);
-    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-      user._id.toString(),
-      this.userRepository.getUserById,
-      this.userRepository.saveUserWithoutValidation
-    );
+    if (!user || incommingRefreshToken !== user.refreshToken)
+      throw new CustomError("Unauthorized, Invalid refresh token", 401);
+    const { accessToken, refreshToken } =
+      await this.generateAccessAndRefreshTokens(user._id.toString());
     return { accessToken, refreshToken, user };
+  }
+
+  async generateAccessAndRefreshTokens(user) {
+    const accessToken = await this.generateAccessToken(user);
+    const refreshToken = await this.generateRefreshToken(user._id);
+    await this.userRepository.updateUser(user._id, {
+      refreshToken,
+    });
+    return { accessToken, refreshToken };
+  }
+
+  async generateAccessToken(user) {
+    const accessToken = await jwtSignAsync(
+      {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: 60 * 15 }
+    );
+    return accessToken;
+  }
+
+  async generateRefreshToken(userId) {
+    const refreshToken = await jwtSignAsync(
+      {
+        _id: userId,
+      },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "30d" }
+    );
+    return refreshToken;
   }
 }
 

@@ -19,14 +19,14 @@ class UserRepository {
   }
 
   async updateUser(id, newUserData) {
-    return await User.findByIdAndUpdate(id, newUserData, {
-      new: true,
-      runValidators: true,
-    });
-  }
-
-  async saveUserWithoutValidation(user) {
-    await user.save({ validateBeforeSave: false });
+    await User.findByIdAndUpdate(
+      id,
+      { $set: newUserData },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
   }
 }
 
