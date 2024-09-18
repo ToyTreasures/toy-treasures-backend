@@ -54,20 +54,22 @@ class ItemController {
     return await this.itemRepository.createItem(item, userId);
   }
 
-  async updateItem(id, newItemData) {
-    const item = await this.itemRepository.updateItem(id, newItemData);
-    if (!item) {
-      throw new CustomError("Item not Found", 404);
-    }
-    return item;
+  async updateItem(itemId, userId, newItemData) {
+    const oldItem = await this.itemRepository.getItemById(itemId);
+    if (!oldItem) throw new CustomError("Item not Found", 404);
+    if (userId.toString() !== oldItem.ownerId.toString())
+      throw new CustomError("Unauthorized to update this item", 401);
+    const newItem = await this.itemRepository.updateItem(itemId, newItemData);
+    return newItem;
   }
 
-  async deleteItem(id) {
-    const item = await this.itemRepository.deleteItem(id);
-    if (!item) {
-      throw new CustomError("Invalid item id");
-    }
-    return item;
+  async deleteItem(itemId, userId) {
+    const item = await this.itemRepository.getItemById(itemId);
+    if (!item) throw new CustomError("Item not Found", 404);
+    if (userId.toString() !== item.ownerId.toString())
+      throw new CustomError("Unauthorized to delete this item", 401);
+    const deletedItem = await this.itemRepository.deleteItem(itemId);
+    return deletedItem;
   }
 }
 

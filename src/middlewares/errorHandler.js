@@ -21,7 +21,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   if (err.name === "JsonWebTokenError") {
-    err.message = "Invalid token, please log in again";
+    err.message = "Unauthorized, Invalid token";
     err.statusCode = 401;
   }
 

@@ -26,22 +26,22 @@ const itemRouter = (itemController) => {
   });
 
   router.post("/", auth, async (req, res) => {
-    const item = await itemController.createItem(
-      req.body,
-      "66e57d5d19e130df45b391e2"
-    );
+    const userId = req.user._id;
+    const item = await itemController.createItem(req.body, userId);
     res.status(200).send({ success: "Item created successfully", item });
   });
 
   router.patch("/:id", auth, async (req, res) => {
-    const { id } = req.params;
-    const item = await itemController.updateItem(id, req.body);
+    const { id: itemId } = req.params;
+    const { _id: userId } = req.user;
+    const item = await itemController.updateItem(itemId, userId, req.body);
     res.status(200).send({ success: "Item updated successfully", item });
   });
 
   router.delete("/:id", auth, async (req, res) => {
-    const { id } = req.params;
-    const item = await itemController.deleteItem(id);
+    const { id: itemId } = req.params;
+    const { _id: userId } = req.user;
+    const item = await itemController.deleteItem(itemId, userId);
     res.status(200).send({ success: "Item deleted successfully", item });
   });
 

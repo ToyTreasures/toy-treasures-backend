@@ -1,4 +1,5 @@
 const express = require("express");
+const auth = require("../middlewares/auth");
 const router = express.Router();
 
 const authRouter = (authController) => {
@@ -9,10 +10,43 @@ const authRouter = (authController) => {
   });
 
   router.post("/login", async (req, res) => {
-    const { token, user } = await authController.login(req.body);
+    const { accessToken, refreshToken, user } = await authController.login(
+      req.body
+    );
+    const options = {
+      httpOnly: true,
+    };
+    res.status(200).cookie("refreshToken", refreshToken, options).send({
+      success: "User logged in successfully",
+      accessToken,
+      user,
+    });
+  });
+
+  router.get("/logout", auth, async (req, res) => {
+    const { _id: userId } = req.user;
+    const user = await authController.logout(userId);
+    const options = {
+      httpOnly: true,
+    };
     res
       .status(200)
-      .send({ success: "User logged in successfully", token, user });
+      .clearCookie("refreshToken", options)
+      .send({ success: "User logged out successfully", user });
+  });
+
+  router.post("/refresh-token", auth, async (req, res) => {
+    const { refreshToken: incommingRefreshToken } = req.cookies;
+    const { accessToken, refreshToken, user } =
+      await authController.refreshAccessToken(incommingRefreshToken);
+    const options = {
+      httpOnly: true,
+    };
+    res.status(200).cookie("refreshToken", refreshToken, options).send({
+      success: "Access token refreshed successfully",
+      accessToken,
+      user,
+    });
   });
 
   return router;
