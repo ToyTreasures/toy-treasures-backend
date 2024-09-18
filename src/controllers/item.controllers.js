@@ -1,4 +1,9 @@
 const CustomError = require("../utils/CustomError");
+const {
+  createItemSchema,
+  updateItemSchema,
+  paginatedItemsSchema,
+} = require("../utils/validation/item.validation");
 
 class ItemController {
   itemRepository;
@@ -6,9 +11,19 @@ class ItemController {
     this.itemRepository = itemRepository;
   }
 
-  async getAllItems(page="1", limit="12") {
-    const skip = (page-1) * limit;
-    return await this.itemRepository.getAllItems(limit, skip);
+  async getAllItems(page = "1", limit = "12") {
+    try {
+      const { error, value } = paginatedItemsSchema.validate({ page, limit });
+      if (error) {
+        const errorMessages = error.details.map((detail) => detail.message);
+        throw new CustomError(errorMessages.join(", "), 400);
+      }
+      const skip = (page - 1) * limit;
+      return await this.itemRepository.getAllItems(value.limit, skip);
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new CustomError(error.message, 500);
+    }
   }
 
   async getItemById(id) {
@@ -20,15 +35,39 @@ class ItemController {
   }
 
   async createItem(item, userId) {
-    return await this.itemRepository.createItem(item, userId);
+    try {
+      const { error, value } = createItemSchema.validate({ ...item, ownerId: userId });
+
+      if (error) {
+        const errorMessages = error.details.map((detail) => detail.message);
+        throw new CustomError(errorMessages.join(", "), 400);
+      }
+
+      return await this.itemRepository.createItem(value, userId);
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new CustomError(error.message, 500);
+    }
   }
 
   async updateItem(id, newItemData) {
-    const item = await this.itemRepository.updateItem(id, newItemData);
-    if (!item) {
-      throw new CustomError("Item not Found", 404);
+    try {
+      const { error, value } = updateItemSchema.validate(newItemData);
+
+      if (error) {
+        const errorMessages = error.details.map((detail) => detail.message);
+        throw new CustomError(errorMessages.join(", "), 400);
+      }
+
+      const item = await this.itemRepository.updateItem(id, value);
+      if (!item) {
+        throw new CustomError("Item not Found", 404);
+      }
+      return item;
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new CustomError(error.message, 500);
     }
-    return item;
   }
 
   async deleteItem(id) {
