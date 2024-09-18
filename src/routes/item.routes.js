@@ -3,10 +3,11 @@ const router = express.Router();
 
 const itemRouter = (itemController) => {
   router.get("/", async (req, res) => {
-    const { page, limit } = req.query;
+    const { page, limit, filters } = req.query;
     const { itemsNumber, pages, items } = await itemController.getAllItems(
       page,
-      limit
+      limit,
+      filters
     );
     res
       .status(200)

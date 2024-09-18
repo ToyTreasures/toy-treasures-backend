@@ -1,12 +1,27 @@
 const Item = require("../models/item.model");
 
 class ItemRepository {
-  async getAllItems(limit, skip) {
-    const itemsNumber = await Item.countDocuments({});
-    const pages = Math.ceil(itemsNumber/limit);
-    const items = await Item.find({}).skip(skip).limit(limit);
-    return {itemsNumber, pages, items};
+  async getAllItems(limit, skip, query, address) {
+    query = query.length ? query : [{}];
+
+    const items = await Item.find({ $and: query })
+      .populate({
+        path: "ownerId",
+        select: "address",
+        match: address ? { address } : {},
+      })
+      .skip(skip)
+      .limit(limit);
+  
+    const filteredItems = items.filter((item) => item.ownerId || !address);
+  
+    const itemsNumber = filteredItems.length;
+  
+    const pages = Math.ceil(itemsNumber / limit);
+  
+    return { itemsNumber, pages, items: filteredItems };
   }
+  
 
   async getItemById(id) {
     return await Item.findById(id);
