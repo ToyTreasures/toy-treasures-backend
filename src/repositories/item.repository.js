@@ -12,16 +12,15 @@ class ItemRepository {
       })
       .skip(skip)
       .limit(limit);
-  
+
     const filteredItems = items.filter((item) => item.ownerId || !address);
-  
+
     const itemsNumber = filteredItems.length;
-  
+
     const pages = Math.ceil(itemsNumber / limit);
-  
+
     return { itemsNumber, pages, items: filteredItems };
   }
-  
 
   async getItemById(id) {
     return await Item.findById(id);

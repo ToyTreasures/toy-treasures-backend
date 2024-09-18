@@ -6,7 +6,7 @@ class ItemController {
     this.itemRepository = itemRepository;
   }
 
-  async getAllItems(page = "1", limit = "12", filters) {
+  async getAllItems(page = "1", limit = "12", filters, search) {
     const skip = (page - 1) * limit;
     const query = [];
     let address = "";
@@ -26,10 +26,19 @@ class ItemController {
           query.push({ condition: { $in: conditions } });
         } else if (filter.includes("address")) {
           address = filter.split("-")[1];
-          console.log(address);
         }
       });
     }
+
+    if (search) {
+      query.push({
+        $or: [
+          { name: { $regex: search, $options: "i" } },
+          { description: { $regex: search, $options: "i" } },
+        ],
+      });
+    }
+
     return await this.itemRepository.getAllItems(limit, skip, query, address);
   }
 
