@@ -50,8 +50,8 @@ class ItemController {
     return item;
   }
 
-  async createItem(item, userId) {
-    return await this.itemRepository.createItem(item, userId);
+  async createItem(item) {
+    return await this.itemRepository.createItem(item);
   }
 
   async updateItem(itemId, userId, newItemData) {

@@ -26,8 +26,8 @@ class ItemRepository {
     return await Item.findById(id);
   }
 
-  async createItem(item, userId) {
-    const newItem = new Item({ ...item, ownerId: userId });
+  async createItem(item) {
+    const newItem = new Item(item);
     return await newItem.save();
   }
 
