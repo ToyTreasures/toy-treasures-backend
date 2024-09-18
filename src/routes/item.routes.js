@@ -1,4 +1,6 @@
 const express = require("express");
+const checkRole = require("../middlewares/checkRole");
+const auth = require("../middlewares/auth");
 const router = express.Router();
 
 const itemRouter = (itemController) => {
@@ -9,13 +11,11 @@ const itemRouter = (itemController) => {
       limit,
       filters
     );
-    res
-      .status(200)
-      .send({
-        success: "All items fetched successfully",
-        items,
-        paginationMetaData: { itemsNumber, pages },
-      });
+    res.status(200).send({
+      success: "All items fetched successfully",
+      items,
+      paginationMetaData: { itemsNumber, pages },
+    });
   });
 
   router.get("/:id", async (req, res) => {
@@ -24,7 +24,7 @@ const itemRouter = (itemController) => {
     res.status(200).send({ success: "Item fetched successfully", item });
   });
 
-  router.post("/", async (req, res) => {
+  router.post("/", auth, async (req, res) => {
     const item = await itemController.createItem(
       req.body,
       "66e57d5d19e130df45b391e2"
@@ -32,13 +32,13 @@ const itemRouter = (itemController) => {
     res.status(200).send({ success: "Item created successfully", item });
   });
 
-  router.patch("/:id", async (req, res) => {
+  router.patch("/:id", auth, async (req, res) => {
     const { id } = req.params;
     const item = await itemController.updateItem(id, req.body);
     res.status(200).send({ success: "Item updated successfully", item });
   });
 
-  router.delete("/:id", async (req, res) => {
+  router.delete("/:id", auth, async (req, res) => {
     const { id } = req.params;
     const item = await itemController.deleteItem(id);
     res.status(200).send({ success: "Item deleted successfully", item });
