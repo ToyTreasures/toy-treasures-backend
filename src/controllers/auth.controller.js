@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const jwtVerifyAsync = util.promisify(jwt.verify);
 const jwtSignAsync = util.promisify(jwt.sign);
+const { createUserSchema } = require("../utils/validation/users.validation");
+require("dotenv").config();
 
 class AuthController {
   userRepository;
@@ -12,14 +14,20 @@ class AuthController {
   }
 
   async register(userData) {
-    //joi validation on userData(req.body) first
-    //validation in case like this could be put in pre"save" script in the user model
-    const existingUser = await this.userRepository.getUserByEmail(
-      userData.email
-    );
-    if (existingUser) throw new CustomError("Email already exists", 409);
-    const user = await this.userRepository.createUser(userData);
-    return user;
+    try {
+      const { error } = createUserSchema.validate(userData, { abortEarly: false });
+      if (error) {
+        const errorMessages = error.details.map((detail) => detail.message);
+        throw new CustomError(errorMessages.join(", "), 400);
+      }
+      const existingUser = await this.userRepository.getUserByEmail(userData.email);
+      if (existingUser) throw new CustomError("Email already exists", 409);
+      const user = await this.userRepository.createUser(userData);
+      return user;
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw new CustomError(error.message, 500);
+    }
   }
 
   async login(userData) {

@@ -1,4 +1,5 @@
 const CustomError = require("../utils/CustomError");
+const { createItemSchema, updateItemSchema } = require("../utils/validation/item.validation");
 
 class ItemController {
   itemRepository;
@@ -51,10 +52,20 @@ class ItemController {
   }
 
   async createItem(item) {
+    const { error } = createItemSchema.validate(item);
+    if (error) {
+      const errorMessages = error.details.map((detail) => detail.message);
+      throw new CustomError(errorMessages.join(", "), 400);
+    }
     return await this.itemRepository.createItem(item);
   }
 
   async updateItem(itemId, userId, newItemData) {
+    const { error } = updateItemSchema.validate(newItemData);
+    if (error) {
+      const errorMessages = error.details.map((detail) => detail.message);
+      throw new CustomError(errorMessages.join(", "), 400);
+    }
     const oldItem = await this.itemRepository.getItemById(itemId);
     if (!oldItem) throw new CustomError("Item not Found", 404);
     if (userId.toString() !== oldItem.ownerId.toString())
