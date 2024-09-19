@@ -15,14 +15,14 @@ class AuthController {
 
   async register(userData) {
     try {
-      const { error, value } = createUserSchema.validate(userData, { abortEarly: false });
+      const { error } = createUserSchema.validate(userData, { abortEarly: false });
       if (error) {
         const errorMessages = error.details.map((detail) => detail.message);
         throw new CustomError(errorMessages.join(", "), 400);
       }
       const existingUser = await this.userRepository.getUserByEmail(userData.email);
       if (existingUser) throw new CustomError("Email already exists", 409);
-      const user = await this.userRepository.createUser(value);
+      const user = await this.userRepository.createUser(userData);
       return user;
     } catch (error) {
       if (error instanceof CustomError) throw error;
