@@ -6,7 +6,7 @@ const createItemSchema = Joi.object({
   description: Joi.string().max(500).required(),
   price: Joi.number().min(1).required(),
   condition: Joi.string().required(),
-  isAvailableForSwap: Joi.boolean().default(false).required(),
+  isAvailableForSwap: Joi.boolean().default(false),
   ownerId: Joi.string()
     .custom((value, helpers) => {
       if (!mongoose.Types.ObjectId.isValid(value)) {

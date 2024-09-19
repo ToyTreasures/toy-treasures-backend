@@ -1,5 +1,4 @@
 const CustomError = require("../utils/CustomError");
-const { createItemSchema, updateItemSchema } = require("../utils/validation/item.validation");
 
 class ItemController {
   itemRepository;
@@ -14,8 +13,9 @@ class ItemController {
     if (filters) {
       const filtersArray = filters.split("--");
       filtersArray.forEach((filter) => {
-        if (filter === "swap") {
-          query.push({ isAvailableForSwap: true });
+        if (filter.includes("swap")) {
+          const isAvailableForSwap = filter.split("-")[1];
+          query.push({ isAvailableForSwap });
         } else if (filter.includes("minPrice")) {
           const price = filter.split("-")[1];
           query.push({ price: { $gte: price } });
@@ -23,7 +23,7 @@ class ItemController {
           const price = filter.split("-")[1];
           query.push({ price: { $lte: price } });
         } else if (filter.includes("condition")) {
-          const conditions = filter.split("-")[1].split("%");
+          const conditions = filter.split("-")[1].split(",");
           query.push({ condition: { $in: conditions } });
         } else if (filter.includes("address")) {
           address = filter.split("-")[1];
@@ -52,20 +52,10 @@ class ItemController {
   }
 
   async createItem(item) {
-    const { error } = createItemSchema.validate(item);
-    if (error) {
-      const errorMessages = error.details.map((detail) => detail.message);
-      throw new CustomError(errorMessages.join(", "), 400);
-    }
     return await this.itemRepository.createItem(item);
   }
 
   async updateItem(itemId, userId, newItemData) {
-    const { error } = updateItemSchema.validate(newItemData);
-    if (error) {
-      const errorMessages = error.details.map((detail) => detail.message);
-      throw new CustomError(errorMessages.join(", "), 400);
-    }
     const oldItem = await this.itemRepository.getItemById(itemId);
     if (!oldItem) throw new CustomError("Item not Found", 404);
     if (userId.toString() !== oldItem.ownerId.toString())
