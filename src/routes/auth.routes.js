@@ -4,15 +4,13 @@ const router = express.Router();
 
 const authRouter = (authController) => {
   router.post("/register", async (req, res) => {
-    const {role, ...userData} = req.body;
+    const { role, ...userData } = req.body;
     const user = await authController.register(userData);
     res.status(200).send({ success: "User registered successfully", user });
   });
 
   router.post("/login", async (req, res) => {
-    const { accessToken, refreshToken, user } = await authController.login(
-      req.body
-    );
+    const { accessToken, refreshToken, user } = await authController.login(req.body);
     const options = {
       httpOnly: true,
     };
@@ -37,8 +35,9 @@ const authRouter = (authController) => {
 
   router.post("/refresh-token", auth, async (req, res) => {
     const { refreshToken: incommingRefreshToken } = req.cookies;
-    const { accessToken, refreshToken, user } =
-      await authController.refreshAccessToken(incommingRefreshToken);
+    const { accessToken, refreshToken, user } = await authController.refreshAccessToken(
+      incommingRefreshToken
+    );
     const options = {
       httpOnly: true,
     };

@@ -27,7 +27,7 @@ const itemRouter = (itemController) => {
 
   router.post("/", auth, async (req, res) => {
     const ownerId = req.user._id;
-    const item = {...req.body, ownerId};
+    const item = { ...req.body, ownerId };
     const createdItem = await itemController.createItem(item);
     res.status(200).send({ success: "Item created successfully", item: createdItem });
   });
