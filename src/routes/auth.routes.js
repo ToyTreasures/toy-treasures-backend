@@ -23,7 +23,7 @@ const authRouter = (authController) => {
     });
   });
 
-  router.get("/logout", auth, async (req, res) => {
+  router.post("/logout", auth, async (req, res) => {
     const { _id: userId } = req.user;
     const user = await authController.logout(userId);
     const options = {
