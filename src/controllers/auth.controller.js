@@ -15,12 +15,16 @@ class AuthController {
 
   async register(userData) {
     try {
-      const { error } = createUserSchema.validate(userData, { abortEarly: false });
+      const { error } = createUserSchema.validate(userData, {
+        abortEarly: false,
+      });
       if (error) {
         const errorMessages = error.details.map((detail) => detail.message);
         throw new CustomError(errorMessages.join(", "), 400);
       }
-      const existingUser = await this.userRepository.getUserByEmail(userData.email);
+      const existingUser = await this.userRepository.getUserByEmail(
+        userData.email
+      );
       if (existingUser) throw new CustomError("Email already exists", 409);
       const user = await this.userRepository.createUser(userData);
       return user;
@@ -31,16 +35,23 @@ class AuthController {
   }
 
   async login(userData) {
-    console.log(userData);
     const user = await this.userRepository.getUserByEmail(userData.email);
-    console.log(user);
     if (!user) throw new CustomError("invalid email or password", 400);
     if (!userData.password) throw new CustomError("Password is required", 400);
     const isMatched = await bcrypt.compare(userData.password, user.password);
     if (isMatched) {
       const accessToken = await this.generateAccessToken(user);
       const refreshToken = await this.generateRefreshToken(user._id.toString());
-      return { accessToken, refreshToken, user };
+      const {
+        __v,
+        password,
+        refreshToken: _,
+        role,
+        updatedAt,
+        createdAt,
+        ...restUserData
+      } = user._doc;
+      return { accessToken, refreshToken, user: restUserData };
     } else {
       throw new CustomError("invalid email or password", 400);
     }
