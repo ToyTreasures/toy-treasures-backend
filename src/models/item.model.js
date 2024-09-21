@@ -24,6 +24,9 @@ const itemSchema = Schema(
       type: String,
       required: [true, "Thumbnail is required"],
     },
+    thumbnailFileId: {
+      type: String,
+    },
     isAvailableForSwap: {
       type: Boolean,
       default: false,

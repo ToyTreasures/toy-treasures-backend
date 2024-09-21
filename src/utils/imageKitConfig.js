@@ -26,4 +26,19 @@ const uploadToImageKit = (file, fileName, folder) => {
   });
 };
 
-module.exports = uploadToImageKit;
+const deleteFromImageKit = (fileId) => {
+  return new Promise((resolve, reject) => {
+    imageKit.deleteFile(fileId, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+};
+
+module.exports = {
+  uploadToImageKit,
+  deleteFromImageKit,
+};

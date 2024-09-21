@@ -1,5 +1,8 @@
 const CustomError = require("../utils/CustomError");
-const uploadToImageKit = require("../utils/imageKitConfig");
+const {
+  uploadToImageKit,
+  deleteFromImageKit,
+} = require("../utils/imageKitConfig");
 
 class ItemController {
   itemRepository;
@@ -70,6 +73,7 @@ class ItemController {
       throw new CustomError("Image upload failed", 500);
     }
     item.thumbnail = imageKitResponse.url;
+    item.thumbnailFileId = imageKitResponse.fileId;
     return await this.itemRepository.createItem(item);
   }
 
@@ -88,6 +92,7 @@ class ItemController {
     if (userId.toString() !== item.ownerId.toString())
       throw new CustomError("Unauthorized to delete this item", 401);
     const deletedItem = await this.itemRepository.deleteItem(itemId);
+    await deleteFromImageKit(deletedItem.thumbnailFileId);
     return deletedItem;
   }
 }
