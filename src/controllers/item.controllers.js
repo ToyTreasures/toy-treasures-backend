@@ -1,4 +1,9 @@
 const CustomError = require("../utils/CustomError");
+const {
+  uploadToImageKit,
+  deleteFromImageKit,
+  updateImageInImageKit,
+} = require("../utils/imageKitConfig");
 
 class ItemController {
   itemRepository;
@@ -52,6 +57,24 @@ class ItemController {
   }
 
   async createItem(item) {
+    if (
+      !item.thumbnail ||
+      !item.thumbnail.thumbnail ||
+      item.thumbnail.thumbnail.length === 0
+    ) {
+      throw new CustomError("Thumbnail is required", 400);
+    }
+    const thumbnailFile = item.thumbnail.thumbnail[0];
+    const imageKitResponse = await uploadToImageKit(
+      thumbnailFile,
+      thumbnailFile.originalname,
+      "items_thumbnails"
+    );
+    if (!imageKitResponse || !imageKitResponse.url) {
+      throw new CustomError("Image upload failed", 500);
+    }
+    item.thumbnail = imageKitResponse.url;
+    item.thumbnailFileId = imageKitResponse.fileId;
     return await this.itemRepository.createItem(item);
   }
 
@@ -59,7 +82,27 @@ class ItemController {
     const oldItem = await this.itemRepository.getItemById(itemId);
     if (!oldItem) throw new CustomError("Item not Found", 404);
     if (userId.toString() !== oldItem.ownerId.toString())
-      throw new CustomError("Unauthorized to update this item", 401);
+      throw new CustomError(
+        "You do not have permission to update this data",
+        403
+      );
+    if (
+      !newItemData.thumbnail ||
+      !newItemData.thumbnail.thumbnail ||
+      newItemData.thumbnail.thumbnail.length === 0
+    ) {
+      delete newItemData.thumbnail;
+    } else {
+      const thumbnailFile = newItemData.thumbnail.thumbnail[0];
+      const imageKitResponse = await updateImageInImageKit(
+        oldItem.thumbnailFileId,
+        thumbnailFile,
+        thumbnailFile.originalname,
+        "items_thumbnails"
+      );
+      newItemData.thumbnail = imageKitResponse.url;
+      newItemData.thumbnailFileId = imageKitResponse.fileId;
+    }
     const newItem = await this.itemRepository.updateItem(itemId, newItemData);
     return newItem;
   }
@@ -68,8 +111,12 @@ class ItemController {
     const item = await this.itemRepository.getItemById(itemId);
     if (!item) throw new CustomError("Item not Found", 404);
     if (userId.toString() !== item.ownerId.toString())
-      throw new CustomError("Unauthorized to delete this item", 401);
+      throw new CustomError(
+        "You do not have permission to delete this data",
+        403
+      );
     const deletedItem = await this.itemRepository.deleteItem(itemId);
+    await deleteFromImageKit(deletedItem.thumbnailFileId);
     return deletedItem;
   }
 }

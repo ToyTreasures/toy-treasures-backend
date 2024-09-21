@@ -20,6 +20,13 @@ const itemSchema = Schema(
       enum: ["new", "gentle", "used"],
       required: [true, "Condition is required"],
     },
+    thumbnail: {
+      type: String,
+      required: [true, "Thumbnail is required"],
+    },
+    thumbnailFileId: {
+      type: String,
+    },
     isAvailableForSwap: {
       type: Boolean,
       default: false,
@@ -27,7 +34,7 @@ const itemSchema = Schema(
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
     },
   },
   {

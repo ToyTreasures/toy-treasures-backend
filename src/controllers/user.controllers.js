@@ -24,6 +24,11 @@ class UserController {
     if (!user) {
       throw new CustomError("User not found", 404);
     }
+    if (id !== user._id.toString())
+      throw new CustomError(
+        "You do not have permission to update this data",
+        403
+      );
     return user;
   }
 }
