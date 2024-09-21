@@ -1,4 +1,5 @@
 const CustomError = require("../utils/CustomError");
+const uploadToImageKit = require("../utils/imageKitConfig");
 
 class ItemController {
   itemRepository;
@@ -52,6 +53,23 @@ class ItemController {
   }
 
   async createItem(item) {
+    if (
+      !item.thumbnail ||
+      !item.thumbnail.thumbnail ||
+      item.thumbnail.thumbnail.length === 0
+    ) {
+      throw new CustomError("Thumbnail is required", 400);
+    }
+    const thumbnailFile = item.thumbnail.thumbnail[0];
+    const imageKitResponse = await uploadToImageKit(
+      thumbnailFile,
+      thumbnailFile.originalname,
+      "items_thumbnails"
+    );
+    if (!imageKitResponse || !imageKitResponse.url) {
+      throw new CustomError("Image upload failed", 500);
+    }
+    item.thumbnail = imageKitResponse.url;
     return await this.itemRepository.createItem(item);
   }
 
