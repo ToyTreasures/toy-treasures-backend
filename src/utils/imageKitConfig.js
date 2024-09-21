@@ -38,7 +38,18 @@ const deleteFromImageKit = (fileId) => {
   });
 };
 
+const updateImageInImageKit = async (
+  oldFileId,
+  newFile,
+  newFileName,
+  folder
+) => {
+  await deleteFromImageKit(oldFileId);
+  return await uploadToImageKit(newFile, newFileName, folder);
+};
+
 module.exports = {
   uploadToImageKit,
   deleteFromImageKit,
+  updateImageInImageKit,
 };

@@ -2,6 +2,7 @@ const CustomError = require("../utils/CustomError");
 const {
   uploadToImageKit,
   deleteFromImageKit,
+  updateImageInImageKit,
 } = require("../utils/imageKitConfig");
 
 class ItemController {
@@ -82,6 +83,23 @@ class ItemController {
     if (!oldItem) throw new CustomError("Item not Found", 404);
     if (userId.toString() !== oldItem.ownerId.toString())
       throw new CustomError("Unauthorized to update this item", 401);
+    if (
+      !newItemData.thumbnail ||
+      !newItemData.thumbnail.thumbnail ||
+      newItemData.thumbnail.thumbnail.length === 0
+    ) {
+      delete newItemData.thumbnail;
+    } else {
+      const thumbnailFile = newItemData.thumbnail.thumbnail[0];
+      const imageKitResponse = await updateImageInImageKit(
+        oldItem.thumbnailFileId,
+        thumbnailFile,
+        thumbnailFile.originalname,
+        "items_thumbnails"
+      );
+      newItemData.thumbnail = imageKitResponse.url;
+      newItemData.thumbnailFileId = imageKitResponse.fileId;
+    }
     const newItem = await this.itemRepository.updateItem(itemId, newItemData);
     return newItem;
   }

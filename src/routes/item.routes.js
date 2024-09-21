@@ -42,12 +42,24 @@ const itemRouter = (itemController) => {
     }
   );
 
-  router.patch("/:id", auth, async (req, res) => {
-    const { id: itemId } = req.params;
-    const { _id: userId } = req.user;
-    const item = await itemController.updateItem(itemId, userId, req.body);
-    res.status(200).send({ success: "Item updated successfully", item });
-  });
+  router.patch(
+    "/:id",
+    auth,
+    upload.fields([{ name: "thumbnail", maxCount: 1 }]),
+    async (req, res) => {
+      const { id: itemId } = req.params;
+      const { _id: userId } = req.user;
+      const itemData = { ...req.body, thumbnail: req.files };
+      const updatedItem = await itemController.updateItem(
+        itemId,
+        userId,
+        itemData
+      );
+      res
+        .status(200)
+        .send({ success: "Item updated successfully", updatedItem });
+    }
+  );
 
   router.delete("/:id", auth, async (req, res) => {
     const { id: itemId } = req.params;
