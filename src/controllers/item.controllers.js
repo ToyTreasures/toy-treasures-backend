@@ -82,7 +82,10 @@ class ItemController {
     const oldItem = await this.itemRepository.getItemById(itemId);
     if (!oldItem) throw new CustomError("Item not Found", 404);
     if (userId.toString() !== oldItem.ownerId.toString())
-      throw new CustomError("Unauthorized to update this item", 401);
+      throw new CustomError(
+        "You do not have permission to update this data",
+        403
+      );
     if (
       !newItemData.thumbnail ||
       !newItemData.thumbnail.thumbnail ||
@@ -108,7 +111,10 @@ class ItemController {
     const item = await this.itemRepository.getItemById(itemId);
     if (!item) throw new CustomError("Item not Found", 404);
     if (userId.toString() !== item.ownerId.toString())
-      throw new CustomError("Unauthorized to delete this item", 401);
+      throw new CustomError(
+        "You do not have permission to delete this data",
+        403
+      );
     const deletedItem = await this.itemRepository.deleteItem(itemId);
     await deleteFromImageKit(deletedItem.thumbnailFileId);
     return deletedItem;
