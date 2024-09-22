@@ -49,7 +49,10 @@ const userSchema = Schema(
       transform(doc, ret) {
         delete ret.password;
         delete ret.refreshToken;
+        delete ret.role;
         delete ret.__v;
+        delete ret.updatedAt;
+        delete ret.createdAt;
       },
     },
   }
