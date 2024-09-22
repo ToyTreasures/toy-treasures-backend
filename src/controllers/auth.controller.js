@@ -42,16 +42,7 @@ class AuthController {
     if (isMatched) {
       const accessToken = await this.generateAccessToken(user);
       const refreshToken = await this.generateRefreshToken(user._id.toString());
-      const {
-        __v,
-        password,
-        refreshToken: _,
-        role,
-        updatedAt,
-        createdAt,
-        ...restUserData
-      } = user._doc;
-      return { accessToken, refreshToken, user: restUserData };
+      return { accessToken, refreshToken, user };
     } else {
       throw new CustomError("invalid email or password", 400);
     }
