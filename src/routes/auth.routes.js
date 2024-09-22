@@ -10,7 +10,9 @@ const authRouter = (authController) => {
   });
 
   router.post("/login", async (req, res) => {
-    const { accessToken, refreshToken, user } = await authController.login(req.body);
+    const { accessToken, refreshToken, user } = await authController.login(
+      req.body
+    );
     const options = {
       httpOnly: true,
     };
@@ -33,11 +35,10 @@ const authRouter = (authController) => {
       .send({ success: "User logged out successfully", user });
   });
 
-  router.post("/refresh-token", auth, async (req, res) => {
+  router.post("/refresh-token", async (req, res) => {
     const { refreshToken: incommingRefreshToken } = req.cookies;
-    const { accessToken, refreshToken, user } = await authController.refreshAccessToken(
-      incommingRefreshToken
-    );
+    const { accessToken, refreshToken, user } =
+      await authController.refreshAccessToken(incommingRefreshToken);
     const options = {
       httpOnly: true,
     };
