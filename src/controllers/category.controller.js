@@ -12,6 +12,12 @@ class CategoryController {
   }
 
   async createCategory(category) {
+    const existingCategory = await this.categoryRepository.findOne({
+      name: category.name,
+    });
+    if (existingCategory) {
+      throw new CustomError("Category name must be unique", 400);
+    }
     if (
       !category.thumbnail ||
       !category.thumbnail.thumbnail ||
