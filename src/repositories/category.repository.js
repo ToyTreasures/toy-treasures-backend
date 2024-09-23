@@ -1,0 +1,29 @@
+const Category = require("../models/category.model");
+
+class CategoryRepository {
+  async createCategory(category) {
+    const newCategory = new Category(category);
+    return await newCategory.save();
+  }
+
+  async getAllCategories() {
+    return await Category.find({});
+  }
+
+  async getCategoryById(id) {
+    return await Category.findById(id);
+  }
+
+  async updateCategory(id, newCategoryData) {
+    return await Category.findByIdAndUpdate(id, newCategoryData, {
+      new: true,
+      runValidators: true,
+    });
+  }
+
+  async deleteCategory(id) {
+    return await Category.findByIdAndDelete(id);
+  }
+}
+
+module.exports = CategoryRepository;
