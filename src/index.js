@@ -14,20 +14,26 @@ const PORT = process.env.PORT;
 const userRoutes = require("./routes/user.routes");
 const itemRoutes = require("./routes/item.routes");
 const authRoutes = require("./routes/auth.routes");
+const contactUsRoutes = require("./routes/contactUs.routes");
 
 const UserController = require("./controllers/user.controllers");
 const ItemController = require("./controllers/item.controllers");
 const AuthController = require("./controllers/auth.controller");
+const ContactUsController = require("./controllers/contactUs.controller");
 
 const UserRepository = require("./repositories/user.repository");
 const ItemRepository = require("./repositories/item.repository");
+const ContactUsRepository = require("./repositories/contactUs.repository");
 
 const userRepository = new UserRepository();
 const itemRepository = new ItemRepository();
+const contactUsRepository = new ContactUsRepository();
 
 const userController = new UserController(userRepository);
 const itemController = new ItemController(itemRepository);
 const authController = new AuthController(userRepository);
+const contactUsController = new ContactUsController(contactUsRepository);
+
 
 const app = express();
 
@@ -47,6 +53,8 @@ app.use(morgan("short"));
 mainRouter.use("/users", userRoutes(userController));
 mainRouter.use("/items", itemRoutes(itemController));
 mainRouter.use("/auth", authRoutes(authController));
+mainRouter.use("/contact", contactUsRoutes(contactUsController));
+
 
 app.use("/api/v1", mainRouter);
 
