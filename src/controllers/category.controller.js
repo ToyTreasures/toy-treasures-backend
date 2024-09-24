@@ -4,6 +4,10 @@ const {
   deleteFromImageKit,
   updateImageInImageKit,
 } = require("../utils/imageKitConfig");
+const {
+  createCategorySchema,
+  updateCategorySchema,
+} = require("../utils/validation/category.validation");
 
 class CategoryController {
   categoryRepository;
@@ -12,6 +16,13 @@ class CategoryController {
   }
 
   async createCategory(category) {
+    const { error } = createCategorySchema.validate(category, {
+      abortEarly: false,
+    });
+    if (error) {
+      const errorMessages = error.details.map((detail) => detail.message);
+      throw new CustomError(errorMessages.join(", ").replace(/"/g, ""), 400);
+    }
     const existingCategory = await this.categoryRepository.findOne({
       name: category.name,
     });
@@ -50,6 +61,13 @@ class CategoryController {
   }
 
   async updateCategory(id, newCategoryData) {
+    const { error } = updateCategorySchema.validate(newCategoryData, {
+      abortEarly: false,
+    });
+    if (error) {
+      const errorMessages = error.details.map((detail) => detail.message);
+      throw new CustomError(errorMessages.join(", ").replace(/"/g, ""), 400);
+    }
     const oldCategory = await this.categoryRepository.getCategoryById(id);
     if (!oldCategory) throw new CustomError("Category not found", 404);
     console.log(oldCategory);

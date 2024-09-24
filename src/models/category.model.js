@@ -10,6 +10,7 @@ const categorySchema = Schema(
     description: {
       type: String,
       maxlength: 500,
+      required: [true, "Description is required"],
     },
     items: [{ type: mongoose.Schema.Types.ObjectId, ref: "Item" }],
     thumbnail: {
@@ -22,6 +23,14 @@ const categorySchema = Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      transform(doc, ret) {
+        delete ret.thumbnailFileId;
+        delete ret.__v;
+        delete ret.updatedAt;
+        delete ret.createdAt;
+      },
+    },
   }
 );
 
