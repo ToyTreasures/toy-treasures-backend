@@ -23,7 +23,12 @@ class CategoryController {
       const errorMessages = error.details.map((detail) => detail.message);
       throw new CustomError(errorMessages.join(", ").replace(/"/g, ""), 400);
     }
-
+    const existingCategory = await this.categoryRepository.findOne({
+      name: category.name,
+    });
+    if (existingCategory) {
+      throw new CustomError("Category name must be unique", 400);
+    }
     if (
       !category.thumbnail ||
       !category.thumbnail.thumbnail ||
@@ -64,13 +69,20 @@ class CategoryController {
       const errorMessages = error.details.map((detail) => detail.message);
       throw new CustomError(errorMessages.join(", ").replace(/"/g, ""), 400);
     }
-    const oldCategory = await this.categoryRepository.getCategoryById(id);
-    if (!oldCategory) throw new CustomError("Category not found", 404);
-
+    const existingCategory = await this.categoryRepository.getCategoryById(id);
+    if (!existingCategory) throw new CustomError("Category not found", 404);
+    if (newCategoryData.name) {
+      const existingCategory = await this.categoryRepository.findOne({
+        name: newCategoryData.name,
+      });
+      if (existingCategory) {
+        throw new CustomError("Category name must be unique", 400);
+      }
+    }
     if (newCategoryData.thumbnail) {
       const thumbnailFile = newCategoryData.thumbnail;
       const imageKitResponse = await updateImageInImageKit(
-        oldCategory.thumbnailFileId,
+        existingCategory.thumbnailFileId,
         thumbnailFile,
         thumbnailFile.originalname,
         "category_thumbnails"
