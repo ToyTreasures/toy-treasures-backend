@@ -10,6 +10,10 @@ class CategoryRepository {
     return await Category.find({});
   }
 
+  async findOne(query) {
+    return await Category.findOne(query);
+  }
+
   async getCategoryById(id) {
     return await Category.findById(id);
   }
@@ -23,6 +27,14 @@ class CategoryRepository {
 
   async deleteCategory(id) {
     return await Category.findByIdAndDelete(id);
+  }
+
+  async addItemToCategory(categoryName, itemId) {
+    return await Category.findOneAndUpdate(
+      { name: categoryName },
+      { $push: { items: itemId } },
+      { new: true, runValidators: true }
+    );
   }
 }
 

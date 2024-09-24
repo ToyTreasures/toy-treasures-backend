@@ -83,6 +83,10 @@ class CategoryController {
     await deleteFromImageKit(deletedCategory.thumbnailFileId);
     return deletedCategory;
   }
+
+  async addItemToCategory(categoryName, itemId) {
+    await this.categoryRepository.addItemToCategory(categoryName, itemId);
+  }
 }
 
 module.exports = CategoryController;
