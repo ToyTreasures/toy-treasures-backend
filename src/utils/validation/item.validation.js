@@ -10,11 +10,15 @@ const validCategoryNames = [
   "Technology",
 ];
 
+const validConditionNames = ["new", "gentle", "used"];
+
 const createItemSchema = Joi.object({
-  name: Joi.string().required(),
+  name: Joi.string().max(30).required(),
   description: Joi.string().max(500).required(),
   price: Joi.number().min(1).required(),
-  condition: Joi.string().required(),
+  condition: Joi.string()
+    .valid(...validConditionNames)
+    .required(),
   category: Joi.string()
     .valid(...validCategoryNames)
     .required(),
@@ -30,10 +34,21 @@ const createItemSchema = Joi.object({
     .optional(),
 });
 
-const updateItemSchema = createItemSchema.fork(
-  ["name", "price", "condition", "description"],
-  (schema) => schema.optional()
-);
+const updateItemSchema = createItemSchema
+  .fork(
+    [
+      "name",
+      "price",
+      "condition",
+      "description",
+      "category",
+      "isAvailableForSwap",
+    ],
+    (schema) => schema.optional()
+  )
+  .append({
+    ownerId: Joi.forbidden(),
+  });
 
 module.exports = {
   createItemSchema,

@@ -4,7 +4,10 @@ const {
   deleteFromImageKit,
   updateImageInImageKit,
 } = require("../utils/imageKitConfig");
-const { createItemSchema } = require("../utils/validation/item.validation");
+const {
+  createItemSchema,
+  updateItemSchema,
+} = require("../utils/validation/item.validation");
 
 class ItemController {
   itemRepository;
@@ -63,7 +66,7 @@ class ItemController {
     });
     if (error) {
       const errorMessages = error.details.map((detail) => detail.message);
-      throw new CustomError(errorMessages.join(", "), 400);
+      throw new CustomError(errorMessages.join(", ").replace(/"/g, ""), 400);
     }
     if (
       !item.thumbnail ||
@@ -87,6 +90,13 @@ class ItemController {
   }
 
   async updateItem(itemId, userId, newItemData) {
+    const { error } = updateItemSchema.validate(newItemData, {
+      abortEarly: false,
+    });
+    if (error) {
+      const errorMessages = error.details.map((detail) => detail.message);
+      throw new CustomError(errorMessages.join(", ").replace(/"/g, ""), 400);
+    }
     const oldItem = await this.itemRepository.getItemById(itemId);
     if (!oldItem) throw new CustomError("Item not Found", 404);
     if (userId.toString() !== oldItem.ownerId.toString())
