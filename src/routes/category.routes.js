@@ -6,7 +6,7 @@ const categoryRouter = (categoryController) => {
   router.get("/", async (req, res) => {
     const categories = await categoryController.getAllCategories();
     res.status(200).send({
-      succes: "Categories fetched successfully",
+      success: "Categories fetched successfully",
       categories,
     });
   });
@@ -15,7 +15,7 @@ const categoryRouter = (categoryController) => {
     const { id } = req.params;
     const category = await categoryController.getCategoryById(id);
     res.status(200).send({
-      succes: "Category fetched successfully",
+      success: "Category fetched successfully",
       category,
     });
   });
@@ -27,7 +27,7 @@ const categoryRouter = (categoryController) => {
       const category = { ...req.body, thumbnail: req.files };
       const createdCategory = await categoryController.createCategory(category);
       res.status(201).send({
-        succes: "Category created successfully",
+        success: "Category created successfully",
         category: createdCategory,
       });
     }
@@ -44,7 +44,7 @@ const categoryRouter = (categoryController) => {
         categoryData
       );
       res.status(200).send({
-        succes: "Category updated successfully",
+        success: "Category updated successfully",
         category,
       });
     }
@@ -54,7 +54,7 @@ const categoryRouter = (categoryController) => {
     const { id } = req.params;
     const category = await categoryController.deleteCategory(id);
     res.status(200).send({
-      succes: "Category deleted successfully",
+      success: "Category deleted successfully",
       category,
     });
   });
