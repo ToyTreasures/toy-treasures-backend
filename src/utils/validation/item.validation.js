@@ -13,8 +13,8 @@ const validCategoryNames = [
 const validConditionNames = ["new", "gentle", "used"];
 
 const createItemSchema = Joi.object({
-  name: Joi.string().max(30).required(),
-  description: Joi.string().max(500).required(),
+  name: Joi.string().min(3).max(30).required(),
+  description: Joi.string().min(3).max(500).required(),
   price: Joi.number().min(1).required(),
   condition: Joi.string()
     .valid(...validConditionNames)
