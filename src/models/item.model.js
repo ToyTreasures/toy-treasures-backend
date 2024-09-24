@@ -31,6 +31,10 @@ const itemSchema = Schema(
       type: Boolean,
       default: false,
     },
+    category: {
+      type: String,
+      required: [true, "Category is required"],
+    },
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -39,6 +43,14 @@ const itemSchema = Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      transform(doc, ret) {
+        delete ret.thumbnailFileId;
+        delete ret.__v;
+        delete ret.updatedAt;
+        delete ret.createdAt;
+      },
+    },
   }
 );
 

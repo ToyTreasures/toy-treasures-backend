@@ -19,7 +19,7 @@ class AuthController {
     });
     if (error) {
       const errorMessages = error.details.map((detail) => detail.message);
-      throw new CustomError(errorMessages.join(", "), 400);
+      throw new CustomError(errorMessages.join(", ").replace(/"/g, ""), 400);
     }
     const existingUser = await this.userRepository.getUserByEmail(
       userData.email

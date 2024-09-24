@@ -36,6 +36,7 @@ const itemRouter = (itemController) => {
       const item = { ...req.body, thumbnail, ownerId };
 
       const createdItem = await itemController.createItem(item);
+
       res
         .status(200)
         .send({ success: "Item created successfully", item: createdItem });
@@ -49,7 +50,13 @@ const itemRouter = (itemController) => {
     async (req, res) => {
       const { id: itemId } = req.params;
       const { _id: userId } = req.user;
-      const itemData = { ...req.body, thumbnail: req.files };
+      const itemData = { ...req.body };
+
+      if (req.files && req.files.thumbnail && req.files.thumbnail.length > 0) {
+        const thumbnailFile = req.files.thumbnail[0];
+        itemData.thumbnail = thumbnailFile;
+      }
+
       const updatedItem = await itemController.updateItem(
         itemId,
         userId,
