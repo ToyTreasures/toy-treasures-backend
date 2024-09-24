@@ -4,7 +4,7 @@ const auth = require("../middlewares/auth");
 const upload = require("../utils/multerConfig");
 const router = express.Router();
 
-const itemRouter = (itemController, categoryController) => {
+const itemRouter = (itemController) => {
   router.get("/", async (req, res) => {
     const { page, limit, filters, search } = req.query;
     const { itemsNumber, pages, items } = await itemController.getAllItems(
@@ -36,10 +36,7 @@ const itemRouter = (itemController, categoryController) => {
       const item = { ...req.body, thumbnail, ownerId };
 
       const createdItem = await itemController.createItem(item);
-      await categoryController.addItemToCategory(
-        createdItem.category,
-        createdItem._id
-      );
+
       res
         .status(200)
         .send({ success: "Item created successfully", item: createdItem });
@@ -53,7 +50,13 @@ const itemRouter = (itemController, categoryController) => {
     async (req, res) => {
       const { id: itemId } = req.params;
       const { _id: userId } = req.user;
-      const itemData = { ...req.body, thumbnail: req.files };
+      const itemData = { ...req.body };
+
+      if (req.files && req.files.thumbnail && req.files.thumbnail.length > 0) {
+        const thumbnailFile = req.files.thumbnail[0];
+        itemData.thumbnail = thumbnailFile;
+      }
+
       const updatedItem = await itemController.updateItem(
         itemId,
         userId,

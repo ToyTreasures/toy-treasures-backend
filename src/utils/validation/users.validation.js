@@ -7,7 +7,7 @@ const createUserSchema = Joi.object({
   phoneNumber: Joi.string()
     .required()
     .pattern(new RegExp("^(010|011|012|015)\\d{8}$"))
-    .message("Invalid Egyption phone number"),
+    .message("Invalid Egyptian phone number"),
   address: Joi.string().required(),
   role: Joi.string().valid("user", "admin").default("user"),
 });

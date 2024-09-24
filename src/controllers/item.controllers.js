@@ -104,14 +104,8 @@ class ItemController {
         "You do not have permission to update this data",
         403
       );
-    if (
-      !newItemData.thumbnail ||
-      !newItemData.thumbnail.thumbnail ||
-      newItemData.thumbnail.thumbnail.length === 0
-    ) {
-      delete newItemData.thumbnail;
-    } else {
-      const thumbnailFile = newItemData.thumbnail.thumbnail[0];
+    if (newItemData.thumbnail) {
+      const thumbnailFile = newItemData.thumbnail;
       const imageKitResponse = await updateImageInImageKit(
         oldItem.thumbnailFileId,
         thumbnailFile,

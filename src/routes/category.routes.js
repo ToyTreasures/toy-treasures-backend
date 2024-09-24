@@ -38,7 +38,13 @@ const categoryRouter = (categoryController) => {
     upload.fields([{ name: "thumbnail", maxCount: 1 }]),
     async (req, res) => {
       const { id } = req.params;
-      const categoryData = { ...req.body, thumbnail: req.files };
+      const categoryData = { ...req.body };
+
+      if (req.files && req.files.thumbnail && req.files.thumbnail.length > 0) {
+        const thumbnailFile = req.files.thumbnail[0];
+        categoryData.thumbnail = thumbnailFile;
+      }
+
       const category = await categoryController.updateCategory(
         id,
         categoryData

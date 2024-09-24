@@ -50,9 +50,9 @@ app.use(requestLogger);
 app.use(morgan("short"));
 
 mainRouter.use("/users", userRoutes(userController));
-mainRouter.use("/items", itemRoutes(itemController, categoryController));
+mainRouter.use("/items", itemRoutes(itemController));
 mainRouter.use("/auth", authRoutes(authController));
-mainRouter.use("/category", categoryRouter(categoryController));
+mainRouter.use("/categories", categoryRouter(categoryController));
 
 app.use("/api/v1", mainRouter);
 

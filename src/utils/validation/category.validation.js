@@ -7,7 +7,7 @@ const createCategorySchema = Joi.object({
 });
 
 const updateCategorySchema = createCategorySchema.fork(
-  ["name", "description"],
+  ["name", "description", "thumbnail"],
   (schema) => schema.optional()
 );
 
