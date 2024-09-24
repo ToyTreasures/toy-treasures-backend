@@ -1,5 +1,5 @@
-const { default: mongoose } = require("mongoose");
 const CustomError = require("../utils/CustomError");
+const bcrypt = require("bcrypt");
 
 class UserController {
   userRepository;
@@ -20,6 +20,10 @@ class UserController {
   }
 
   async updateUser(id, newUserData) {
+    if (newUserData.password) {
+      newUserData.password = await bcrypt.hash(newUserData.password, 10);
+    }
+
     const user = await this.userRepository.updateUser(id, newUserData);
     if (!user) {
       throw new CustomError("User not found", 404);
