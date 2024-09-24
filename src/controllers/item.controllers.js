@@ -4,6 +4,7 @@ const {
   deleteFromImageKit,
   updateImageInImageKit,
 } = require("../utils/imageKitConfig");
+const { createItemSchema } = require("../utils/validation/item.validation");
 
 class ItemController {
   itemRepository;
@@ -57,6 +58,13 @@ class ItemController {
   }
 
   async createItem(item) {
+    const { error } = createItemSchema.validate(item, {
+      abortEarly: false,
+    });
+    if (error) {
+      const errorMessages = error.details.map((detail) => detail.message);
+      throw new CustomError(errorMessages.join(", "), 400);
+    }
     if (
       !item.thumbnail ||
       !item.thumbnail.thumbnail ||
