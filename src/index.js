@@ -23,6 +23,7 @@ const CategoryController = require("./controllers/category.controller");
 
 const UserRepository = require("./repositories/user.repository");
 const ItemRepository = require("./repositories/item.repository");
+const ContactUsRepository = require("./repositories/contactUs.repository");
 const CategoryRepository = require("./repositories/category.repository");
 
 const userRepository = new UserRepository();
