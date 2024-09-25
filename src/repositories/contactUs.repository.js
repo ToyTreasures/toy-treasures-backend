@@ -1,6 +1,6 @@
 const ContactUs = require("../models/contactUs.model");
 
-class contactUsRepository {
+class ContactUsRepository {
   async createEmail(emailData) {
     const email = new ContactUs(emailData);
     return await email.save();
@@ -14,4 +14,4 @@ class contactUsRepository {
   }
 }
 
-module.exports = contactUsRepository;
+module.exports = ContactUsRepository;

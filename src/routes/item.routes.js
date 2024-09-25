@@ -7,7 +7,7 @@ const router = express.Router();
 const itemRouter = (itemController) => {
   router.get("/", async (req, res) => {
     const { page, limit, filters, search } = req.query;
-    const { itemsNumber, pages, items } = await itemController.getAllItems(
+    const { itemsNumber, pagesNumber, items } = await itemController.getAllItems(
       page,
       limit,
       filters,
@@ -16,7 +16,7 @@ const itemRouter = (itemController) => {
     res.status(200).send({
       success: "All items fetched successfully",
       items,
-      paginationMetaData: { itemsNumber, pages },
+      paginationMetaData: { itemsNumber, pagesNumber },
     });
   });
 
