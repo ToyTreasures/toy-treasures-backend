@@ -105,7 +105,7 @@ class CategoryController {
   }
 
   async getCategoryByName(categoryName) {
-    if (!categoryName) throw new CustomError("Category name is required");
+    if (!categoryName) throw new CustomError("Category name is required", 400);
     return await this.categoryRepository.getCategoryByName(categoryName);
   }
 }

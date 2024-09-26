@@ -36,9 +36,7 @@ const itemRouter = (itemController) => {
       const ownerId = req.user._id;
       const thumbnail = req.files;
       const item = { ...req.body, thumbnail, ownerId };
-
       const createdItem = await itemController.createItem(item);
-
       res
         .status(200)
         .send({ success: "Item created successfully", item: createdItem });

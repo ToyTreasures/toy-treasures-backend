@@ -31,7 +31,7 @@ const itemSchema = Schema(
       type: Boolean,
       default: false,
     },
-    category: {
+    categoryId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
       required: [true, "Category is required"],
