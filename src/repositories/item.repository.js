@@ -4,6 +4,13 @@ class ItemRepository {
   async getAllItems(limit, skip, query, address) {
     query = query.length ? query : [{}];
 
+    const totalItems = await Item.countDocuments({ $and: query })
+      .populate({
+        path: "ownerId",
+        select: "address",
+        match: address ? { address } : {},
+      });
+
     const items = await Item.find({ $and: query })
       .populate({
         path: "ownerId",
@@ -17,9 +24,9 @@ class ItemRepository {
 
     const itemsNumber = filteredItems.length;
 
-    const pages = Math.ceil(itemsNumber / limit);
+    const pagesNumber = Math.ceil(totalItems / limit);
 
-    return { itemsNumber, pages, items: filteredItems };
+    return { itemsNumber, pagesNumber, items: filteredItems };
   }
 
   async getItemById(id) {

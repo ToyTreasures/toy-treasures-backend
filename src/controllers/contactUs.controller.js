@@ -1,6 +1,8 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
-const { contactUsSchema } = require("../utils/validation/contactUs.validation.js");
+const {
+  contactUsSchema,
+} = require("../utils/validation/contactUs.validation.js");
 
 class ContactUsController {
   constructor(contactUsRepository) {
@@ -13,11 +15,6 @@ class ContactUsController {
         pass: process.env.APP_PASSWORD,
       },
     });
-  }
-
-  async deleteAllEmails() {
-    await this.contactUsRepository.deleteAllEmails();
-    return { message: "All emails deleted successfully" };
   }
 
   async sendEmail(MessageData) {
@@ -43,13 +40,18 @@ class ContactUsController {
     const info = await this.transporter.sendMail(mailOptions);
 
     return {
-      message: "Form submitted successfully and email sent",
+      message: "Email sent",
       submission: savedEmail,
     };
   }
 
   async getAllEmails() {
     return await this.contactUsRepository.getAllEmails();
+  }
+
+  async deleteAllEmails() {
+    await this.contactUsRepository.deleteAllEmails();
+    return { message: "All emails deleted successfully" };
   }
 }
 
