@@ -33,6 +33,10 @@ const userSchema = Schema(
       type: String,
       required: [true, "Address is required"],
     },
+    wishlistId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Wishlist",
+    },
     role: {
       type: String,
       enum: ["user", "admin"],
