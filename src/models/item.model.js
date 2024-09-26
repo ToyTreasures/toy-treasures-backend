@@ -48,7 +48,6 @@ const itemSchema = Schema(
         delete ret.thumbnailFileId;
         delete ret.__v;
         delete ret.updatedAt;
-        delete ret.createdAt;
       },
     },
   }
