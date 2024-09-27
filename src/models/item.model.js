@@ -31,8 +31,9 @@ const itemSchema = Schema(
       type: Boolean,
       default: false,
     },
-    category: {
-      type: String,
+    categoryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
       required: [true, "Category is required"],
     },
     ownerId: {
@@ -48,7 +49,6 @@ const itemSchema = Schema(
         delete ret.thumbnailFileId;
         delete ret.__v;
         delete ret.updatedAt;
-        delete ret.createdAt;
       },
     },
   }

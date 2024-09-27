@@ -104,8 +104,9 @@ class CategoryController {
     return deletedCategory;
   }
 
-  async addItemToCategory(categoryName, itemId) {
-    await this.categoryRepository.addItemToCategory(categoryName, itemId);
+  async getCategoryByName(categoryName) {
+    if (!categoryName) throw new CustomError("Category name is required", 400);
+    return await this.categoryRepository.getCategoryByName(categoryName);
   }
 }
 

@@ -6,13 +6,13 @@ const categorySchema = Schema(
       type: String,
       unique: true,
       required: [true, "Name is required"],
+      index: true,
     },
     description: {
       type: String,
       maxlength: 500,
       required: [true, "Description is required"],
     },
-    items: [{ type: mongoose.Schema.Types.ObjectId, ref: "Item" }],
     thumbnail: {
       type: String,
       required: [true, "Thumbnail is required"],

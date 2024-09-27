@@ -7,12 +7,19 @@ const router = express.Router();
 const itemRouter = (itemController) => {
   router.get("/", async (req, res) => {
     const { page, limit, filters, search } = req.query;
-    const { itemsNumber, pagesNumber, items } = await itemController.getAllItems(page, limit, filters, search);
+    const { itemsNumber, pagesNumber, items } =
+      await itemController.getAllItems(page, limit, filters, search);
     res.status(200).send({
       success: "All items fetched successfully",
       items,
       paginationMetaData: { itemsNumber, pagesNumber },
     });
+  });
+
+  router.get("/user-items/:id", async (req, res) => {
+    const { id: userId } = req.params;
+    const items = await itemController.getUserItems(userId);
+    res.status(200).send({ success: "User Items fetched successfully", items });
   });
 
   router.get("/:id", async (req, res) => {

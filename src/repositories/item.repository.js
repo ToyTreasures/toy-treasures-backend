@@ -28,6 +28,10 @@ class ItemRepository {
     return { itemsNumber, pagesNumber, items: filteredItems };
   }
 
+  async getUserItems(userId) {
+    return await Item.find({ ownerId: userId });
+  }
+
   async getItemById(id) {
     return await Item.findById(id);
   }
