@@ -14,6 +14,7 @@ const PORT = process.env.PORT;
 const userRoutes = require("./routes/user.routes");
 const itemRoutes = require("./routes/item.routes");
 const authRoutes = require("./routes/auth.routes");
+const contactUsRoutes = require("./routes/contactUs.routes");
 const categoryRouter = require("./routes/category.routes");
 const contactUsRouter = require("./routes/contactUs.routes");
 
