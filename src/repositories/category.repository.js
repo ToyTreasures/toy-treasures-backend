@@ -36,6 +36,10 @@ class CategoryRepository {
       { new: true, runValidators: true }
     );
   }
+
+  async getCategoryByName(categoryName) {
+    return await Category.findOne({ name: categoryName });
+  }
 }
 
 module.exports = CategoryRepository;

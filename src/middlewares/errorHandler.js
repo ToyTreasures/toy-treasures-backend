@@ -26,7 +26,7 @@ const errorHandler = (err, req, res, next) => {
   }
 
   if (err.name === "TokenExpiredError") {
-    err.message = "Your token has expired, please log in again";
+    err.message = "Unauthorized, Invalid refresh token";
     err.statusCode = 401;
   }
 

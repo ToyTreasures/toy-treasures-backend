@@ -1,15 +1,6 @@
 const Joi = require("joi");
 const mongoose = require("mongoose");
 
-const validCategoryNames = [
-  "Action Figures",
-  "Stuffed Animals",
-  "Wooden Toys",
-  "Puzzle",
-  "Doll & Plush",
-  "Technology",
-];
-
 const validConditionNames = ["new", "gentle", "used"];
 
 const createItemSchema = Joi.object({
@@ -19,11 +10,16 @@ const createItemSchema = Joi.object({
   condition: Joi.string()
     .valid(...validConditionNames)
     .required(),
-  category: Joi.string()
-    .valid(...validCategoryNames)
-    .required(),
   isAvailableForSwap: Joi.boolean().default(false),
   thumbnail: Joi.required(),
+  category: Joi.string()
+    .custom((value, helpers) => {
+      if (!mongoose.Types.ObjectId.isValid(value)) {
+        return helpers.error("any.invalid");
+      }
+      return value;
+    }, "valid MongoDB ObjectId")
+    .required(),
   ownerId: Joi.string()
     .custom((value, helpers) => {
       if (!mongoose.Types.ObjectId.isValid(value)) {

@@ -11,6 +11,15 @@ const categoryRouter = (categoryController) => {
     });
   });
 
+  router.get("/name", async (req, res) => {
+    const { categoryName } = req.query;
+    const category = await categoryController.getCategoryByName(categoryName);
+    res.status(200).send({
+      success: "Category fetched successfully",
+      category,
+    });
+  });
+
   router.get("/:id", async (req, res) => {
     const { id } = req.params;
     const category = await categoryController.getCategoryById(id);
