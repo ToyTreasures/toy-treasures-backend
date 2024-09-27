@@ -2,10 +2,9 @@ const { Schema, model, default: mongoose } = require("mongoose");
 
 const wishlistSchema = Schema(
   {
-    userId: {
+    ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
     items: [{ type: mongoose.Schema.Types.ObjectId, ref: "Item" }],
   },
