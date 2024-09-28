@@ -4,12 +4,11 @@ class ItemRepository {
   async getAllItems(limit, skip, query, address) {
     query = query.length ? query : [{}];
 
-    const totalItems = await Item.countDocuments({ $and: query })
-      .populate({
-        path: "ownerId",
-        select: "address",
-        match: address ? { address } : {},
-      });
+    const totalItems = await Item.countDocuments({ $and: query }).populate({
+      path: "ownerId",
+      select: "address",
+      match: address ? { address } : {},
+    });
 
     const items = await Item.find({ $and: query })
       .populate({
@@ -29,8 +28,16 @@ class ItemRepository {
     return { itemsNumber, pagesNumber, items: filteredItems };
   }
 
+  async getUserItems(userId) {
+    return await Item.find({ ownerId: userId });
+  }
+
   async getItemById(id) {
     return await Item.findById(id);
+  }
+
+  async getUserItems(userId) {
+    return await Item.find({ ownerId: userId }).select("thumbnail name description price condition").exec();
   }
 
   async createItem(item) {

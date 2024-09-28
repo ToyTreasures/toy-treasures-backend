@@ -52,12 +52,23 @@ class ItemController {
     return await this.itemRepository.getAllItems(limit, skip, query, address);
   }
 
+  async getUserItems(userId) {
+    const items = await this.itemRepository.getUserItems(userId);
+    if (!items) throw new CustomError("User not found", 404);
+
+    return items;
+  }
+
   async getItemById(id) {
     const item = await this.itemRepository.getItemById(id);
     if (!item) {
       throw new CustomError("Item not found", 404);
     }
     return item;
+  }
+
+  async getUserItems(userId) {
+    return await this.itemRepository.getUserItems(userId);
   }
 
   async createItem(item) {

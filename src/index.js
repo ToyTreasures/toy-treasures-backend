@@ -14,6 +14,7 @@ const PORT = process.env.PORT;
 const userRoutes = require("./routes/user.routes");
 const itemRoutes = require("./routes/item.routes");
 const authRoutes = require("./routes/auth.routes");
+const contactUsRoutes = require("./routes/contactUs.routes");
 const categoryRouter = require("./routes/category.routes");
 const contactUsRouter = require("./routes/contactUs.routes");
 const wishlistRouter = require("./routes/wishlist.routes");
@@ -63,7 +64,7 @@ mainRouter.use("/users", userRoutes(userController));
 mainRouter.use("/items", itemRoutes(itemController));
 mainRouter.use("/auth", authRoutes(authController));
 mainRouter.use("/categories", categoryRouter(categoryController));
-mainRouter.use("/contactUs", contactUsRouter(contactUsController));
+mainRouter.use("/contact-us", contactUsRouter(contactUsController));
 mainRouter.use("/wishlist", wishlistRouter(wishlistController));
 
 app.use("/api/v1", mainRouter);
