@@ -31,9 +31,8 @@ const itemSchema = Schema(
       type: Boolean,
       default: false,
     },
-    categoryId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+    category: {
+      type: String,
       required: [true, "Category is required"],
     },
     ownerId: {
