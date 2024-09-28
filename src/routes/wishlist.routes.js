@@ -4,8 +4,8 @@ const CustomError = require("../utils/CustomError");
 const router = express.Router();
 
 const wishlistRouter = (wishlistController) => {
-  router.post("/", auth, async (req, res) => {
-    const { _id: userId } = req.user;
+  router.post("/", async (req, res) => {
+    const { _id: userId } = req.body;
     const wishlist = await wishlistController.createWishlist(userId);
     res.status(201).send({
       success: "Wishlist created successfully",
