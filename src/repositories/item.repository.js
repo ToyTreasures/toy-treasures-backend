@@ -41,6 +41,7 @@ class ItemRepository {
   }
 
   async createItem(item) {
+    console.log(item);
     const newItem = new Item(item);
     return await newItem.save();
   }

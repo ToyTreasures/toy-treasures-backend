@@ -12,7 +12,7 @@ const createItemSchema = Joi.object({
     .required(),
   isAvailableForSwap: Joi.boolean().default(false),
   thumbnail: Joi.required(),
-  category: Joi.string()
+  categoryId: Joi.string()
     .custom((value, helpers) => {
       if (!mongoose.Types.ObjectId.isValid(value)) {
         return helpers.error("any.invalid");
@@ -37,7 +37,7 @@ const updateItemSchema = createItemSchema
       "price",
       "condition",
       "description",
-      "category",
+      "categoryId",
       "isAvailableForSwap",
     ],
     (schema) => schema.optional()

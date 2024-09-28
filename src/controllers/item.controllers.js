@@ -72,6 +72,7 @@ class ItemController {
   }
 
   async createItem(item) {
+    console.log(item);
     const { error } = createItemSchema.validate(item, {
       abortEarly: false,
     });
