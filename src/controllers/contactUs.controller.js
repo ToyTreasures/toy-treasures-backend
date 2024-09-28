@@ -3,8 +3,11 @@ require("dotenv").config();
 const {
   contactUsSchema,
 } = require("../utils/validation/contactUs.validation.js");
+const CustomError = require("../utils/CustomError.js");
 
 class ContactUsController {
+  contactUsRepository;
+  transporter;
   constructor(contactUsRepository) {
     this.contactUsRepository = contactUsRepository;
     this.transporter = nodemailer.createTransport({
@@ -20,11 +23,10 @@ class ContactUsController {
   async sendEmail(MessageData) {
     const { error } = contactUsSchema.validate(MessageData);
     if (error) {
-      const errors = error.details.map((detail) => detail.message);
-      return { errors };
+      const errorMessages = error.details.map((detail) => detail.message);
+      throw new CustomError(errorMessages.join(", ").replace(/"/g, ""), 400);
     }
-
-    const savedEmail = await this.contactUsRepository.createEmail(MessageData);
+    const email = await this.contactUsRepository.createEmail(MessageData);
     const mailOptions = {
       from: '"Toy Treasures" <' + process.env.SENDER_EMAIL + ">",
       to: process.env.RECIPIENT_EMAIL,
@@ -38,11 +40,7 @@ class ContactUsController {
     };
     await this.transporter.verify();
     const info = await this.transporter.sendMail(mailOptions);
-
-    return {
-      message: "Email sent",
-      submission: savedEmail,
-    };
+    return email;
   }
 
   async getAllEmails() {
@@ -50,8 +48,7 @@ class ContactUsController {
   }
 
   async deleteAllEmails() {
-    await this.contactUsRepository.deleteAllEmails();
-    return { message: "All emails deleted successfully" };
+    return await this.contactUsRepository.deleteAllEmails();
   }
 }
 
