@@ -9,6 +9,7 @@ class ContactUsRepository {
   async getAllEmails() {
     return await ContactUs.find({});
   }
+
   async deleteAllEmails() {
     return await ContactUs.deleteMany({});
   }

@@ -58,7 +58,7 @@ mainRouter.use("/users", userRoutes(userController));
 mainRouter.use("/items", itemRoutes(itemController));
 mainRouter.use("/auth", authRoutes(authController));
 mainRouter.use("/categories", categoryRouter(categoryController));
-mainRouter.use("/contactUs", contactUsRouter(contactUsController));
+mainRouter.use("/contact-us", contactUsRouter(contactUsController));
 
 app.use("/api/v1", mainRouter);
 
