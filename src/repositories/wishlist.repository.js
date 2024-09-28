@@ -8,13 +8,10 @@ class WishlistRepository {
     return await wishlist.save();
   }
 
-  async getWishlistByUserId(userId) {
-    return await Wishlist.findOne({ ownerId: userId });
-  }
-
   async getWishlist(userId) {
-    if (!userId) throw new CustomError("User ID is required", 400);
-    const wishlist = await this.wishlistRepository.getWishlistByUserId(userId);
+    const wishlist = await Wishlist.findOne({ ownerId: userId }).populate(
+      "items"
+    );
     if (!wishlist) throw new CustomError("Wishlist not found", 404);
     return wishlist;
   }

@@ -27,7 +27,7 @@ class WishlistController {
 
   async getWishlist(userId) {
     if (!userId) throw new CustomError("User ID is required", 400);
-    const wishlist = await this.wishlistRepository.getWishlistByUserId(userId);
+    const wishlist = await this.wishlistRepository.getWishlist(userId);
     if (!wishlist) throw new CustomError("Wishlist not found", 404);
     return wishlist;
   }
