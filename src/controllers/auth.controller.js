@@ -74,7 +74,7 @@ class AuthController {
         role: user.role,
       },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: 60 * 15 }
+      { expiresIn: 60}
     );
     return accessToken;
   }

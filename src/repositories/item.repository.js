@@ -36,7 +36,12 @@ class ItemRepository {
     return await Item.findById(id);
   }
 
+  async getUserItems(userId) {
+    return await Item.find({ ownerId: userId }).select("thumbnail name description price condition").exec();
+  }
+
   async createItem(item) {
+    console.log(item);
     const newItem = new Item(item);
     return await newItem.save();
   }

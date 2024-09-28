@@ -1,4 +1,4 @@
-const { Schema, model } = require("mongoose");
+const { Schema, model, default: mongoose } = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const userSchema = Schema(
@@ -32,6 +32,10 @@ const userSchema = Schema(
     address: {
       type: String,
       required: [true, "Address is required"],
+    },
+    wishlistId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Wishlist",
     },
     role: {
       type: String,

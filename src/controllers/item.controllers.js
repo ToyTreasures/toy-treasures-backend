@@ -67,7 +67,12 @@ class ItemController {
     return item;
   }
 
+  async getUserItems(userId) {
+    return await this.itemRepository.getUserItems(userId);
+  }
+
   async createItem(item) {
+    console.log(item);
     const { error } = createItemSchema.validate(item, {
       abortEarly: false,
     });
