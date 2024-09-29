@@ -8,11 +8,7 @@ class WishlistController {
 
   async createWishlist(userId) {
     if (!userId) throw new CustomError("Userid is required", 400);
-    const existingWishlist = await this.wishlistRepository.getWishlistByUserId(
-      userId
-    );
-    if (existingWishlist)
-      throw new CustomError("Wishlist already exists for this user", 400);
+
     return await this.wishlistRepository.createWishlist(userId);
   }
 
