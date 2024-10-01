@@ -2,6 +2,7 @@ const express = require("express");
 const { default: mongoose } = require("mongoose");
 const errorHandler = require("./middlewares/errorHandler");
 const requestLogger = require("./middlewares/requestLogger");
+const rateLimiter = require("./utils/rateLimiterConfig");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const cors = require("cors");
@@ -56,6 +57,7 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
+app.use(rateLimiter());
 app.use(requestLogger);
 app.use(morgan("short"));
 
