@@ -31,6 +31,10 @@ const itemSchema = Schema(
       type: Boolean,
       default: false,
     },
+    sold: {
+      type: Boolean,
+      default: false,
+    },
     category: {
       type: String,
       required: [true, "Category is required"],
