@@ -37,7 +37,9 @@ class ItemRepository {
   }
 
   async getUserItems(userId) {
-    return await Item.find({ ownerId: userId }).select("thumbnail name description price condition").exec();
+    return await Item.find({ ownerId: userId })
+      .select("thumbnail name description price condition")
+      .exec();
   }
 
   async createItem(item) {

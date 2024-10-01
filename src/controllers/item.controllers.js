@@ -131,6 +131,20 @@ class ItemController {
     return newItem;
   }
 
+  async toggleSoldStatus(itemId, userId) {
+    const oldItem = await this.itemRepository.getItemById(itemId);
+    if (!oldItem) throw new CustomError("Item not Found", 404);
+    if (userId.toString() !== oldItem.ownerId.toString())
+      throw new CustomError(
+        "You do not have permission to update this data",
+        403
+      );
+    const updatedItem = await this.itemRepository.updateItem(itemId, {
+      sold: !oldItem.sold,
+    });
+    return updatedItem;
+  }
+
   async deleteItem(itemId, userId) {
     const item = await this.itemRepository.getItemById(itemId);
     if (!item) throw new CustomError("Item not Found", 404);
