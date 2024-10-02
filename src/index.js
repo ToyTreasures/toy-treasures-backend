@@ -55,9 +55,10 @@ app.use(
     credentials: true,
   })
 );
+
+app.use(rateLimiter());
 app.use(express.json());
 app.use(cookieParser());
-app.use(rateLimiter());
 app.use(requestLogger);
 app.use(morgan("short"));
 
