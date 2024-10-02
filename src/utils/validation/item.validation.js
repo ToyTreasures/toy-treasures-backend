@@ -3,12 +3,10 @@ const mongoose = require("mongoose");
 
 const validConditionNames = ["new", "gentle", "used"];
 const validCategoryNames = [
-  "Action Figures",
-  "Stuffed Animals",
-  "Wooden Toys",
-  "Puzzle",
-  "Doll & Plush",
-  "Technology",
+  "Educational",
+  "Action Figures & Dolls",
+  "Outdoor & Sports",
+  "Electronic & Interactive",
 ];
 
 const createItemSchema = Joi.object({
