@@ -17,7 +17,7 @@ class ItemController {
 
   async getAllItems(page = "1", limit = "12", filters, search) {
     const skip = (page - 1) * limit;
-    const query = [];
+    const query = [{ sold: false }];
     let address = "";
     if (filters) {
       const filtersArray = filters.split("--");
