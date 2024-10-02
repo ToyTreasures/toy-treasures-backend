@@ -34,6 +34,9 @@ class ItemController {
         } else if (filter.includes("condition")) {
           const conditions = filter.split("-")[1].split(",");
           query.push({ condition: { $in: conditions } });
+        } else if (filter.includes("category")) {
+          const categories = filter.split("-")[1].split(",");
+          query.push({ category: { $in: categories } });
         } else if (filter.includes("address")) {
           address = filter.split("-")[1];
         }
