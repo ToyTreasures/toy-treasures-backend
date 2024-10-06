@@ -2,30 +2,57 @@ const Item = require("../models/item.model");
 
 class ItemRepository {
   async getAllItems(limit, skip, query, address) {
-    query = query.length ? query : [{}];
+    const matchQuery = address ? { ...query, "owner.address": address } : query;
+    const items = await Item.aggregate([
+      { $match: query },
+      {
+        $lookup: {
+          from: "users",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "owner",
+        },
+      },
+      { $unwind: "$owner" },
+      { $match: matchQuery },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          description: 1,
+          price: 1,
+          condition: 1,
+          category: 1,
+          isAvailableForSwap: 1,
+          thumbnail: 1,
+          "ownerId._id": "$owner._id",
+          "ownerId.address": "$owner.address",
+        },
+      },
+    ]);
 
-    const totalItems = await Item.countDocuments({ $and: query }).populate({
-      path: "ownerId",
-      select: "address",
-      match: address ? { address } : {},
-    });
+    const totalItems = await Item.aggregate([
+      { $match: query },
+      {
+        $lookup: {
+          from: "users",
+          localField: "ownerId",
+          foreignField: "_id",
+          as: "owner",
+        },
+      },
+      { $unwind: "$owner" },
+      { $match: matchQuery },
+      { $count: "total" },
+    ]);
 
-    const items = await Item.find({ $and: query })
-      .populate({
-        path: "ownerId",
-        select: "address",
-        match: address ? { address } : {},
-      })
-      .skip(skip)
-      .limit(limit);
+    const itemsNumber = items.length;
+    const totalCount = totalItems.length > 0 ? totalItems[0].total : 0;
+    const pagesNumber = Math.ceil(totalCount / limit);
 
-    const filteredItems = items.filter((item) => item.ownerId || !address);
-
-    const itemsNumber = filteredItems.length;
-
-    const pagesNumber = Math.ceil(totalItems / limit);
-
-    return { itemsNumber, pagesNumber, items: filteredItems };
+    return { itemsNumber, pagesNumber, items };
   }
 
   async getUserItems(userId) {
@@ -41,7 +68,6 @@ class ItemRepository {
   }
 
   async createItem(item) {
-    console.log(item);
     const newItem = new Item(item);
     return await newItem.save();
   }

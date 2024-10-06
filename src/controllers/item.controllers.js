@@ -15,44 +15,48 @@ class ItemController {
     this.itemRepository = itemRepository;
   }
 
-  async getAllItems(page = "1", limit = "12", filters, search) {
-    const skip = (page - 1) * limit;
-    const query = [{ sold: false }];
-    let address = "";
-    if (filters) {
-      const filtersArray = filters.split("--");
-      filtersArray.forEach((filter) => {
-        if (filter.includes("swap")) {
-          const isAvailableForSwap = filter.split("-")[1];
-          query.push({ isAvailableForSwap });
-        } else if (filter.includes("minPrice")) {
-          const price = filter.split("-")[1];
-          query.push({ price: { $gte: price } });
-        } else if (filter.includes("maxPrice")) {
-          const price = filter.split("-")[1];
-          query.push({ price: { $lte: price } });
-        } else if (filter.includes("condition")) {
-          const conditions = filter.split("-")[1].split(",");
-          query.push({ condition: { $in: conditions } });
-        } else if (filter.includes("category")) {
-          const categories = filter.split("-")[1].split(",");
-          query.push({ category: { $in: categories } });
-        } else if (filter.includes("address")) {
-          address = filter.split("-")[1];
-        }
-      });
-    }
+  async getAllItems({
+    page = 1,
+    limit = 12,
+    search,
+    minPrice,
+    maxPrice,
+    tradeType,
+    conditions,
+    categories,
+    address,
+  }) {
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const query = { sold: false };
 
     if (search) {
-      query.push({
-        $or: [
-          { name: { $regex: search, $options: "i" } },
-          { description: { $regex: search, $options: "i" } },
-        ],
-      });
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
     }
 
-    return await this.itemRepository.getAllItems(limit, skip, query, address);
+    if (minPrice) query.price = { ...query.price, $gte: parseFloat(minPrice) };
+    if (maxPrice) query.price = { ...query.price, $lte: parseFloat(maxPrice) };
+
+    if (tradeType === "buy") query.isAvailableForSwap = false;
+    if (tradeType === "swap") query.isAvailableForSwap = true;
+
+    if (conditions) {
+      const conditionArray = conditions.split(",");
+      query.condition = { $in: conditionArray };
+    }
+
+    if (categories) {
+      const categoryArray = categories.split(",");
+      query.category = { $in: categoryArray };
+    }
+    return await this.itemRepository.getAllItems(
+      parseInt(limit),
+      skip,
+      query,
+      address
+    );
   }
 
   async getUserItems(userId) {
@@ -75,7 +79,6 @@ class ItemController {
   }
 
   async createItem(item) {
-    console.log(item);
     const { error } = createItemSchema.validate(item, {
       abortEarly: false,
     });

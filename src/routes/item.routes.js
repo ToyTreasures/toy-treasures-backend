@@ -6,13 +6,35 @@ const router = express.Router();
 
 const itemRouter = (itemController) => {
   router.get("/", async (req, res) => {
-    const { page, limit, filters, search } = req.query;
-    const { itemsNumber, pagesNumber, items } =
-      await itemController.getAllItems(page, limit, filters, search);
+    const {
+      page = 1,
+      limit = 12,
+      search,
+      minPrice,
+      maxPrice,
+      tradeType,
+      conditions,
+      categories,
+      address,
+    } = req.query;
+    const result = await itemController.getAllItems({
+      page,
+      limit,
+      search,
+      minPrice,
+      maxPrice,
+      tradeType,
+      conditions,
+      categories,
+      address,
+    });
     res.status(200).send({
       success: "All items fetched successfully",
-      items,
-      paginationMetaData: { itemsNumber, pagesNumber },
+      items: result.items,
+      paginationMetaData: {
+        itemsNumber: result.itemsNumber,
+        pagesNumber: result.pagesNumber,
+      },
     });
   });
 
