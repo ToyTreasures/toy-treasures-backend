@@ -43,9 +43,9 @@ class AuthController {
     }
   }
 
-  async logout(userData) {
-    const user = await this.userRepository.updateUser(userData._id, {
-      $set: { refreshToken: null },
+  async logout(userId) {
+    const user = await this.userRepository.updateUser(userId, {
+      refreshToken: null,
     });
     return user;
   }
