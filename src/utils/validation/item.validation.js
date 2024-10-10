@@ -40,6 +40,7 @@ const updateItemSchema = createItemSchema
       "description",
       "category",
       "isAvailableForSwap",
+      "thumbnail",
     ],
     (schema) => schema.optional()
   )
